@@ -7,6 +7,10 @@ require('dotenv').config();
 async function signUp(req, res) {
     const { full_name, role, email, password, phone_number, dob, address, gender } = req.body;
     try {
+        const existingUser = await User.findOne({ email });
+        if (existingUser) {
+            return res.status(400).json({ message: 'Email already exists!' });
+        }
         const hashedPassword = await bcrypt.hash(password, 10);
         const newUser = new User({ full_name, role, email, password: hashedPassword, phone_number, dob, address, gender });
         await newUser.save();
@@ -14,7 +18,8 @@ async function signUp(req, res) {
     } catch (error) {
         res.status(500).json({ message: 'Error creating user', error });
     }
-};
+}
+
 
 async function login(req, res) {
     const { email, password } = req.body;
@@ -34,7 +39,6 @@ async function login(req, res) {
     }
 };
 
-// Cập nhật thông tin người dùng
 async function updateUser(req, res) {
     const { userId } = req.params;
     const { full_name, role, email, password, phone_number, dob, address, gender } = req.body;
@@ -106,6 +110,18 @@ async function deleteUser(req, res) {
     }
 };
 
+async function getUserDetails(req, res) {
+    const { userId } = req.params;
+    try {
+        const user = await User.findById(userId);
+        if (!user) return res.status(404).json({ message: 'User not found' });
+        user.password = undefined;
+        res.status(200).json(user);
+    } catch (error) {
+        res.status(500).json({ message: 'Error retrieving user details', error });
+    }
+}
+
 async function list(req, res, next) {
     try {
         await User.find()
@@ -123,7 +139,8 @@ const userController = {
     deleteUser,
     activeUser,
     inactiveUser,
-    updateUser
+    updateUser,
+    getUserDetails
 };
 
 module.exports = userController;
