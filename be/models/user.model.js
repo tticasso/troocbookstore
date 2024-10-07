@@ -11,6 +11,11 @@ const userSchema = new Schema({
         default: 'user',
         Enum: ['user', 'admin', "logistic", "content-creator"]
     },
+    status: {
+        type: String,
+        default: 'active',
+        Enum: ['active', 'inactive']
+    },
     email: {
         type: String,
         required: [true, 'Email is required']
