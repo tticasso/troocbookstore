@@ -3,6 +3,7 @@ const morgan = require('morgan');
 const bodyParser = require('body-parser');
 const httpErrors = require('http-errors');
 const db = require('./models');
+const userRouter = require('./routes/user.routes');
 
 require('dotenv').config();
 //Khoi tao web server
@@ -17,6 +18,7 @@ app.get('/', (req, res, next) => {
     });
 });
 
+app.use('/api/user', userRouter);
 //Kiem soat loi
 app.use(async (req, res, next) => {
     next(httpErrors.NotFound());
