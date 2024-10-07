@@ -4,6 +4,7 @@ const bodyParser = require('body-parser');
 const httpErrors = require('http-errors');
 const db = require('./models');
 const userRouter = require('./routes/user.routes');
+const authorRouter = require('./routes/author.routes');
 
 require('dotenv').config();
 //Khoi tao web server
@@ -19,6 +20,7 @@ app.get('/', (req, res, next) => {
 });
 
 app.use('/api/user', userRouter);
+app.use('/api/author', authorRouter);
 //Kiem soat loi
 app.use(async (req, res, next) => {
     next(httpErrors.NotFound());

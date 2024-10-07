@@ -9,6 +9,7 @@ userRouter.use(bodyParser.json());
 userRouter.post('/signup', userController.signUp);
 userRouter.post('/login', userController.login);
 userRouter.get('/list', userController.list);
+userRouter.get('/:userId', userController.getUserDetails);
 userRouter.delete('/delete/:userId', userController.deleteUser);
 userRouter.put('/inactive/:userId', userController.inactiveUser);
 userRouter.put('/active/:userId', userController.activeUser);
