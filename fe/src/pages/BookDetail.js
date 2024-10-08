@@ -10,9 +10,9 @@ const BookDetails = () => {
   const decrementQuantity = () => setQuantity(prev => Math.max(1, prev - 1));
 
   return (
-    <div className="max-w-4xl mx-auto p-4">
-      <div className="flex flex-col md:flex-row gap-8">
-        <div className="w-full md:w-1/2 ml-20">
+    <div className="w-5/6 mx-auto p-4 flex flex-col justify-center items-center">
+      <div className="w-4/5 flex flex-col md:flex-row gap-8">
+        <div className="ml-20">
           <img
             src={BookDetail1}
             alt="Suoi Am Mat Troi book cover"
@@ -47,8 +47,8 @@ const BookDetails = () => {
 
       <hr className="my-8 border-t border-[#01A268]" />
 
-      <div className="grid md:grid-cols-2 gap-8">
-        <div className="border rounded-lg p-4">
+      <div className="w-full flex gap-6">
+        <div className="w-3/5 border rounded-lg p-4">
           <h2 className="text-xl text-[#01A268] font-bold font-mono">About the book</h2>
           <h2 className="text-xl font-bold mb-4 font-mono">Lorem ipsum</h2>
           <p className="text-sm text-gray-600 mb-4 font-mono">
@@ -62,7 +62,7 @@ const BookDetails = () => {
           </p>
         </div>
 
-        <div className="border rounded-lg p-4">
+        <div className="w-2/5 border rounded-lg p-4">
           <h2 className="text-xl font-bold mb-4 font-mono">Detail</h2>
           <ul className="space-y-2">
             <li className="flex justify-between font-mono">
