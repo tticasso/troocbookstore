@@ -10,6 +10,12 @@ require('dotenv').config();
 //Khoi tao web server
 const app = express();
 //Bo sung cac middleware kiem soat hoat dong tren web server
+// app.use(cors({
+//     origin: 'http://localhost:3000',
+//     methods: 'GET,POST,PUT,DELETE',
+//     credentials: true
+//   }));
+  app.use(cors());
 app.use(bodyParser.json());
 app.use(morgan('dev'));
 //Dinh tuyen cho root router
