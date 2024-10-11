@@ -5,7 +5,9 @@ const httpErrors = require('http-errors');
 const db = require('./models');
 const userRouter = require('./routes/user.routes');
 const authorRouter = require('./routes/author.routes');
-
+const bookRouter = require('./routes/book.routes');
+const categoryRouter = require('./routes/category.routes');
+const nationRouter = require('./routes/nation.routes');
 require('dotenv').config();
 //Khoi tao web server
 const app = express();
@@ -27,6 +29,9 @@ app.get('/', (req, res, next) => {
 
 app.use('/api/user', userRouter);
 app.use('/api/author', authorRouter);
+app.use('/api/book', bookRouter);
+app.use('/api/category', categoryRouter);
+app.use('/api/nation', nationRouter);
 //Kiem soat loi
 app.use(async (req, res, next) => {
     next(httpErrors.NotFound());

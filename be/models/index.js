@@ -1,6 +1,9 @@
 const mongoose = require("mongoose")
 const user = require("./user.model")
 const author = require("./author.model")
+const book = require("./book.model")
+const category = require("./category.model")
+const nation = require("./nation.model")
 //Cấu hình cho mongoose dạng global
 mongoose.Promise = global.Promise;
 //Định nghĩa đối tương Database
@@ -10,6 +13,9 @@ db.mongoose = mongoose;
 // Bổ sung các thuộc tính cho database
 db.user = user;
 db.author = author;
+db.book = book;
+db.category = category;
+db.nation = nation;
 // Thuộc tính tham chiếu tới action kết nối CSDL
 db.connectDB = async () => {
     mongoose.connect(process.env.MONGO_URI, {
