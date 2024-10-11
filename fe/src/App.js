@@ -6,11 +6,17 @@ import BookList from "./pages/BookList";
 import Homepage from "./pages/Homepage";
 import Login from "./pages/Login";
 import SignUp from "./pages/SignUp";
+import Cart from "./pages/Cart";
 import { Routes, Route } from "react-router-dom";
+import CheckoutPage from "./pages/Checkout";
+import Footer from "./components/Footer";
+import Header from "./components/Header";
+import UserProfile from "./pages/UserProfile";
 
 function App() {
   return (
     <div className="App">
+      <Header/>
       <Routes>
         <Route path="/signup" element={<SignUp />} />
         <Route path="/login" element={<Login />} />
@@ -20,7 +26,11 @@ function App() {
         <Route path="/ReviewList" element={<ReviewList />} />
         <Route path="/AuthorList" element={<AuthorList />} />
         <Route path="/AuthorDetail" element={<AuthorDetail />} />
+        <Route path="/Cart" element={<Cart />} />
+        <Route path="/Checkout" element={<CheckoutPage />} />
+        <Route path="/UserProfile" element={<UserProfile />} />
       </Routes>
+      <Footer/>
     </div>
   );
 }
