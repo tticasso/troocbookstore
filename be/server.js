@@ -8,6 +8,7 @@ const authorRouter = require('./routes/author.routes');
 const bookRouter = require('./routes/book.routes');
 const categoryRouter = require('./routes/category.routes');
 const nationRouter = require('./routes/nation.routes');
+const cartRouter = require('./routes/cart.routes');
 require('dotenv').config();
 //Khoi tao web server
 const app = express();
@@ -17,7 +18,6 @@ const app = express();
 //     methods: 'GET,POST,PUT,DELETE',
 //     credentials: true
 //   }));
-  app.use(cors());
 app.use(bodyParser.json());
 app.use(morgan('dev'));
 //Dinh tuyen cho root router
@@ -32,6 +32,7 @@ app.use('/api/author', authorRouter);
 app.use('/api/book', bookRouter);
 app.use('/api/category', categoryRouter);
 app.use('/api/nation', nationRouter);
+app.use('/api/cart', cartRouter);
 //Kiem soat loi
 app.use(async (req, res, next) => {
     next(httpErrors.NotFound());
