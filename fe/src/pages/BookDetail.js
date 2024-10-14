@@ -10,7 +10,7 @@ const BookDetails = () => {
   const [authors, setAuthors] = useState([]);
   const [quantity, setQuantity] = useState(1);
   const [authorName, setAuthorName] = useState('');
-
+  const user_id = localStorage.getItem('userId');
   // Hàm tăng/giảm số lượng
   const incrementQuantity = () => {
     // Kiểm tra nếu số lượng hiện tại ít hơn số sách trong kho
@@ -59,6 +59,23 @@ const BookDetails = () => {
     return <div>Loading...</div>; // Hiển thị khi dữ liệu chưa được tải
   }
 
+  const handleAddToCart = async () => {
+    const body = {
+      user_id: user_id, // Thay thế bằng user_id thực tế nếu có
+      book_id: book._id,
+      quantity: 1,
+    };
+
+    try {
+      const response = await axios.post('http://localhost:9999/api/cart/add', body);
+      console.log('Add to cart success:', response.data);
+      alert('Book added to cart!');
+    } catch (error) {
+      console.error('Error adding to cart:', error);
+      alert('Failed to add book to cart.');
+    }
+  };
+
   return (
     <div className="w-5/6 mx-auto p-4 flex flex-col justify-center items-center">
       <div className="w-4/5 flex flex-col md:flex-row gap-8">
@@ -87,10 +104,9 @@ const BookDetails = () => {
             <span className="text-gray-400">{book.quantity} left in stock</span>
           </div>
           <div className="flex gap-4">
-            <button className="flex-1 px-4 py-2 border rounded-[5px] flex items-center justify-center">
+            <button onClick={handleAddToCart} className="flex-1 px-4 py-2 border rounded-[5px] flex items-center justify-center">
               <ShoppingCart className="mr-2 h-4 w-4 font-mono" /> Add to cart
             </button>
-            <button className="flex-1 px-4 py-2 bg-[#01A268] text-white rounded font-mono">Buy Now</button>
           </div>
         </div>
       </div>

@@ -7,7 +7,7 @@ const BookCover = ({ book }) => {
   const { _id, title, price, img } = book;
   const [isHovered, setIsHovered] = useState(false);
   const navigate = useNavigate(); // Sử dụng useNavigate để điều hướng
-
+  const user_id = localStorage.getItem('userId');
   // Hàm để xử lý đường dẫn ảnh
   const getImagePath = (imgPath) => {
     if (!imgPath) return '';
@@ -18,6 +18,24 @@ const BookCover = ({ book }) => {
   // Hàm xử lý khi nhấn vào phần thông tin sách
   const handleNavigateToDetail = () => {
     navigate(`/book_detail/${_id}`); // Điều hướng tới trang chi tiết sách
+  };
+
+  // Hàm xử lý khi nhấn "Add to cart"
+  const handleAddToCart = async () => {
+    const body = {
+      user_id: user_id, // Thay thế bằng user_id thực tế nếu có
+      book_id: _id,
+      quantity: 1,
+    };
+
+    try {
+      const response = await axios.post('http://localhost:9999/api/cart/add', body);
+      console.log('Add to cart success:', response.data);
+      alert('Book added to cart!');
+    } catch (error) {
+      console.error('Error adding to cart:', error);
+      alert('Failed to add book to cart.');
+    }
   };
 
   return (
@@ -36,8 +54,11 @@ const BookCover = ({ book }) => {
       </div>
 
       {isHovered && (
-        <button className="w-full h-[54px] font-mono absolute bottom-16 left-1/2 transform -translate-x-1/2 bg-green-600 text-white rounded-lg px-4 mb-2">
-          Thêm vào giỏ hàng
+        <button 
+          className="w-full h-[54px] font-mono absolute bottom-16 left-1/2 transform -translate-x-1/2 bg-green-600 text-white px-4 mb-2"
+          onClick={handleAddToCart} // Thêm sự kiện onClick để gửi request
+        >
+          Add to cart
         </button>
       )}
 
@@ -48,6 +69,7 @@ const BookCover = ({ book }) => {
     </div>
   );
 };
+
 const BookCoverList = () => {
   const [books, setBooks] = useState([]);
 

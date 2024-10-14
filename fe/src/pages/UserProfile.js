@@ -11,15 +11,12 @@ const UserProfile = () => {
     email: '',
     password: '',
     phone: '',
-    confirmPassword: '', // Thêm trường xác nhận mật khẩu
+    confirmPassword: '',
   });
 
-  const [orders, setOrders] = useState([
-    { id: '001', date: '2023-10-15', total: 250000, status: 'Đã giao' },
-    { id: '002', date: '2023-11-20', total: 180000, status: 'Đang giao' },
-    { id: '003', date: '2023-12-05', total: 320000, status: 'Chờ xử lý' },
-  ]);
+  const [orders, setOrders] = useState([]); // Khởi tạo đơn hàng rỗng
 
+  // Lấy thông tin người dùng
   useEffect(() => {
     const fetchUserData = async () => {
       const response = await fetch(`http://localhost:9999/api/user/${userId}`);
@@ -30,16 +27,34 @@ const UserProfile = () => {
         email: data.email,
         password: '',
         phone: data.phone_number,
-        confirmPassword: '', // Khởi tạo trường xác nhận mật khẩu
+        confirmPassword: '',
       });
     };
     fetchUserData();
   }, [userId]);
 
-  const handleEdit = () => {
-    setEditing(true);
+  // Lấy danh sách đơn hàng
+  useEffect(() => {
+    const fetchOrders = async () => {
+      try {
+        const response = await fetch(`http://localhost:9999/api/order/${userId}`);
+        const data = await response.json();
+        setOrders(data); // Cập nhật state với dữ liệu đơn hàng
+      } catch (error) {
+        console.error("Lỗi khi tải đơn hàng:", error);
+      }
+    };
+    fetchOrders();
+  }, [userId]);
+
+  const handleEdit = () => setEditing(true);
+
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setEditedUser(prev => ({ ...prev, [name]: value }));
   };
 
+  // Đặt hàm validateInputs lên trên cùng
   const validateInputs = () => {
     const { fullName, password, confirmPassword, phone } = editedUser;
 
@@ -67,10 +82,10 @@ const UserProfile = () => {
     return true;
   };
 
+  // Hàm handleSave sẽ được sử dụng bên dưới hàm validateInputs
   const handleSave = async () => {
     if (!validateInputs()) return; // Kiểm tra đầu vào
 
-    // Gửi thông tin đã chỉnh sửa tới API
     const response = await fetch(`http://localhost:9999/api/user/update/${userId}`, {
       method: 'PUT',
       headers: {
@@ -92,12 +107,19 @@ const UserProfile = () => {
     }
   };
 
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setEditedUser(prev => ({ ...prev, [name]: value }));
+  // Hàm handleLogout để xử lý sự kiện đăng xuất
+  const handleLogout = () => {
+    localStorage.removeItem('userId');
+    localStorage.removeItem('token'); // Xóa token nếu có
+    window.location.href = '/'; // Chuyển hướng về trang chủ 
   };
 
-  if (!user) return <div>Loading...</div>; // Đợi cho dữ liệu người dùng được lấy về
+  if (!user) return <div>Loading...</div>;
+
+  const formatDate = (dateString) => {
+    const date = new Date(dateString);
+    return date.toLocaleDateString('vi-VN');
+  };
 
   return (
     <div className="w-5/6 flex flex-row container mx-auto p-4 gap-4">
@@ -180,7 +202,7 @@ const UserProfile = () => {
             <p className="py-2 px-3 bg-gray-100 rounded">(+84) {user.phone_number}</p>
           )}
         </div>
-        <div className="flex items-center justify-end">
+        <div className="flex items-center justify-between">
           {editing ? (
             <button
               className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
@@ -199,8 +221,13 @@ const UserProfile = () => {
             </button>
           )}
         </div>
+        <button
+          className="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline mt-4"
+          onClick={handleLogout} // Thêm sự kiện khi nhấn nút Đăng xuất
+        >
+          Đăng xuất
+        </button>
       </div>
-
       <div className="w-1/2 bg-white shadow-md rounded px-8 pt-6 pb-8">
         <h2 className="text-xl font-bold mb-4">Đơn hàng của tôi</h2>
         <table className="w-full">
@@ -213,14 +240,22 @@ const UserProfile = () => {
             </tr>
           </thead>
           <tbody>
-            {orders.map(order => (
-              <tr key={order.id}>
-                <td className="px-4 py-2">{order.id}</td>
-                <td className="px-4 py-2">{order.date}</td>
-                <td className="px-4 py-2">{order.total} VND</td>
-                <td className="px-4 py-2">{order.status}</td>
+            {orders.length > 0 ? (
+              orders.map((order) => (
+                <tr key={order._id}>
+                  <td className="px-4 py-2">{order._id}</td>
+                  <td className="px-4 py-2">{formatDate(order.createdAt)}</td>
+                  <td className="px-4 py-2">{order.total_price} VND</td>
+                  <td className="px-4 py-2">{order.status}</td>
+                </tr>
+              ))
+            ) : (
+              <tr>
+                <td colSpan="4" className="text-center py-4">
+                  Không có đơn hàng nào.
+                </td>
               </tr>
-            ))}
+            )}
           </tbody>
         </table>
       </div>
