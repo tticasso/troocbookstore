@@ -6,6 +6,7 @@ const category = require("./category.model")
 const nation = require("./nation.model")
 const cartItem = require("./cartItem.model")
 const cart = require("./cart.model")
+const order = require("./order.model")
 //Cấu hình cho mongoose dạng global
 mongoose.Promise = global.Promise;
 //Định nghĩa đối tương Database
@@ -20,6 +21,7 @@ db.category = category;
 db.nation = nation;
 db.cartItem = cartItem;
 db.cart = cart;
+db.order = order;
 // Thuộc tính tham chiếu tới action kết nối CSDL
 db.connectDB = async () => {
     mongoose.connect(process.env.MONGO_URI, {
