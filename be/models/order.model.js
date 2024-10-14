@@ -22,7 +22,14 @@ const orderSchema = new mongoose.Schema({
         price: { type: Number, required: true },
     }],
     total_price: { type: Number, required: true },
-    status: { type: String, default: 'pending', Enum: ['pending', 'confirmed', 'shipping', 'success', 'cancel'] }
+    products_price: { type: Number, required: true },
+    shipping_price: { type: Number, default: 25000 },
+    status: { type: String, default: 'pending', Enum: ['pending', 'confirmed', 'shipping', 'success', 'cancel'] },
+    email: { type: String, required: true },
+    phone: { type: String, required: true },
+    address: { type: String, required: true },
+    name: { type: String, required: true },
+    note: { type: String }
 }, { timestamps: true });
 
 const order = mongoose.model('order', orderSchema);

@@ -5,7 +5,7 @@ const Order = db.order; // Chắc chắn rằng bạn đã định nghĩa Order 
 
 // Tạo đơn hàng từ giỏ hàng
 async function createOrder(req, res) {
-    const { user_id } = req.body;
+    const { user_id, email, phone, address, name, note} = req.body;
 
     try {
         // Lấy thông tin giỏ hàng
@@ -24,7 +24,13 @@ async function createOrder(req, res) {
                 quantity: item.quantity,
                 price: item.price
             })),
-            total_price: cart.total_price
+            products_price: cart.total_price,
+            total_price: cart.total_price + 25000,
+            email,
+            phone,
+            address,
+            name,
+            note
         });
 
         const savedOrder = await newOrder.save();
