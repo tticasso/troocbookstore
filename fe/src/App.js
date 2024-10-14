@@ -12,7 +12,7 @@ import CheckoutPage from "./pages/Checkout";
 import Footer from "./components/Footer";
 import Header from "./components/Header";
 import UserProfile from "./pages/UserProfile";
-
+import Dashboard from "./pages/dashboard/DashBoard";
 function App() {
   return (
     <div className="App">
@@ -29,6 +29,7 @@ function App() {
         <Route path="/Cart" element={<Cart />} />
         <Route path="/Checkout" element={<CheckoutPage />} />
         <Route path="/UserProfile" element={<UserProfile />} />
+        <Route path="/dashboard" element={<Dashboard />} />
       </Routes>
       <Footer/>
     </div>
