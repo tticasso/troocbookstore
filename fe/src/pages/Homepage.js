@@ -11,7 +11,10 @@ const Homepage = () => (
 
     {/* Danh sách sách */}
     <h2 className="text-[50px] mb-4 text-center leading-[84px]">Best Seller Books</h2>
+    <div className='w-full flex justify-center items-center'>
     <BookCoverList />
+    </div>
+    
 
     {/* Danh sách tác giả */}
     <AuthorList />

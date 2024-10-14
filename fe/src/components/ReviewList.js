@@ -21,7 +21,7 @@ const ReviewList = () => (
       <ReviewCard title="Review 3" date="30 Mar 2023" image="/api/placeholder/200/150" />
     </div>
     <div className='flex justify-end mx-auto mr-44 mt-2 text-[#01A268] pointer'>
-      <a href='#'>View all</a>
+      <a href='/blog_list'>View all</a>
       <UilArrowRight/>
     </div>
   </div>

@@ -1,9 +1,24 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom'; // Import useNavigate
 import { UilArrowRight } from '@iconscout/react-unicons';
-import Login_Image from '../assets/login_Image.png';
+import axios from 'axios';
 
-const BookCover = ({ title, author, price }) => {
+const BookCover = ({ book }) => {
+  const { _id, title, price, img } = book;
   const [isHovered, setIsHovered] = useState(false);
+  const navigate = useNavigate(); // Sử dụng useNavigate để điều hướng
+
+  // Hàm để xử lý đường dẫn ảnh
+  const getImagePath = (imgPath) => {
+    if (!imgPath) return '';
+    const fileName = imgPath.split('\\').pop(); // Lấy tên file từ đường dẫn
+    return `http://localhost:9999/uploads/${fileName}`; // Tạo đường dẫn đầy đủ dựa trên URL máy chủ
+  };
+
+  // Hàm xử lý khi nhấn vào phần thông tin sách
+  const handleNavigateToDetail = () => {
+    navigate(`/book_detail/${_id}`); // Điều hướng tới trang chi tiết sách
+  };
 
   return (
     <div
@@ -11,7 +26,14 @@ const BookCover = ({ title, author, price }) => {
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
     >
-      <img src={Login_Image} alt="book" className="w-[216px] h-[287px] rounded-t-[20px]" />
+      {/* Khi nhấn vào thông tin sách (trừ nút thêm vào giỏ hàng) sẽ chuyển hướng */}
+      <div onClick={handleNavigateToDetail} className="cursor-pointer">
+        <img 
+          src={getImagePath(img)} 
+          alt={title} 
+          className="w-[216px] h-[287px] rounded-t-[20px] object-cover" 
+        />
+      </div>
 
       {isHovered && (
         <button className="w-full h-[54px] font-mono absolute bottom-16 left-1/2 transform -translate-x-1/2 bg-green-600 text-white rounded-lg px-4 mb-2">
@@ -19,28 +41,45 @@ const BookCover = ({ title, author, price }) => {
         </button>
       )}
 
-      <div className="text-center">
-        <p className="text-[20px] font-mono">{title}</p>
-        <p className="text-[20px] font-mono text-[#01A268] mt-1">${price}</p>
+      <div className="text-center" onClick={handleNavigateToDetail}>
+        <p className="text-[20px] font-mono truncate px-2 cursor-pointer">{title}</p>
+        <p className="text-[20px] font-mono text-[#01A268] mt-1 cursor-pointer">${price}</p>
       </div>
     </div>
   );
 };
+const BookCoverList = () => {
+  const [books, setBooks] = useState([]);
 
-const BookCoverList = () => (
-  <div className="mb-8">
-    <div className="flex space-x-6 justify-center overflow-x-auto">
-      <BookCover title="Book 1" author="Author 1" price="19.99" />
-      <BookCover title="Book 2" author="Author 2" price="24.99" />
-      <BookCover title="Book 3" author="Author 3" price="14.99" />
-      <BookCover title="Book 4" author="Author 4" price="29.99" />
-      <BookCover title="Book 5" author="Author 5" price="22.99" />
+  useEffect(() => {
+    const fetchBooks = async () => {
+      try {
+        const response = await axios.get('http://localhost:9999/api/book/list');
+        setBooks(response.data.slice(0, 5)); // Lấy 5 quyển sách đầu tiên
+      } catch (error) {
+        console.error('Error fetching books:', error);
+      }
+    };
+
+    fetchBooks();
+  }, []);
+
+  return (
+    <div className="mb-8 w-5/7">
+      <div className="flex space-x-6 justify-center overflow-x-auto">
+        {books.map((book) => (
+          <BookCover
+            key={book._id}
+            book={book} // Truyền toàn bộ object book
+          />
+        ))}
+      </div>
+      <div className="flex justify-end mt-2 text-[#01A268] pointer">
+        <a href="/book_list">View all</a>
+        <UilArrowRight />
+      </div>
     </div>
-    <div className="w-full flex justify-end mt-2 text-[#01A268] pointer">
-      <a href="#">View all</a>
-      <UilArrowRight />
-    </div>
-  </div>
-);
+  );
+};
 
 export default BookCoverList;
