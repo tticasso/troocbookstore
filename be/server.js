@@ -9,6 +9,7 @@ const bookRouter = require('./routes/book.routes');
 const categoryRouter = require('./routes/category.routes');
 const nationRouter = require('./routes/nation.routes');
 const cartRouter = require('./routes/cart.routes');
+const orderRouter = require('./routes/order.routes');
 require('dotenv').config();
 //Khoi tao web server
 const app = express();
@@ -33,6 +34,7 @@ app.use('/api/book', bookRouter);
 app.use('/api/category', categoryRouter);
 app.use('/api/nation', nationRouter);
 app.use('/api/cart', cartRouter);
+app.use('/api/order', orderRouter);
 //Kiem soat loi
 app.use(async (req, res, next) => {
     next(httpErrors.NotFound());

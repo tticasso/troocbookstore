@@ -144,6 +144,24 @@ async function removeFromCart(req, res) {
         });
     }
 }
+// Xóa toàn bộ giỏ hàng
+async function clearCart(req, res) {
+    const { user_id } = req.body;
+    try {
+        // Tìm giỏ hàng theo user_id
+        const cart = await Cart.findOne({ user_id });
+        if (!cart) {
+            return res.status(404).json({ message: 'Cart not found' });
+        }
+        // Xóa tất cả các sản phẩm trong giỏ hàng
+        await CartItem.deleteMany({ _id: { $in: cart.items } });
+        // Xóa giỏ hàng khỏi cơ sở dữ liệu
+        await Cart.findByIdAndDelete(cart._id);
+        res.status(200).json({ message: 'Cart cleared successfully' });
+    } catch (error) {
+        res.status(500).json({ error: 'Internal server error', details: error.message });
+    }
+}
 
 
 
@@ -155,7 +173,8 @@ const cartController = {
     addToCart,
     getCart,
     updateCart,
-    removeFromCart
+    removeFromCart,
+    clearCart
 };
 
 module.exports = cartController;
