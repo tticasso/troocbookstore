@@ -21,19 +21,18 @@ function App() {
         <Route path="/signup" element={<SignUp />} />
         <Route path="/login" element={<Login />} />
         <Route path="/" element={<Homepage />} />
-        <Route path="/BookDetail" element={<BookDetails />} />
-        <Route path="/BookList" element={<BookList />} />
-        <Route path="/ReviewList" element={<ReviewList />} />
-        <Route path="/AuthorList" element={<AuthorList />} />
-        <Route path="/AuthorDetail" element={<AuthorDetail />} />
-        <Route path="/Cart" element={<Cart />} />
-        <Route path="/Checkout" element={<CheckoutPage />} />
-        <Route path="/UserProfile" element={<UserProfile />} />
-        <Route path="/dashboard" element={<Dashboard />} />
+        <Route path="/book_detail/:bookId" element={<BookDetails />} />
+        <Route path="/book_list" element={<BookList />} />
+        <Route path="/blog_list" element={<ReviewList />} />
+        <Route path="/author_list" element={<AuthorList />} />
+        <Route path="/author_detail/:authorId" element={<AuthorDetail />} />
+        <Route path="/cart" element={<Cart />} />
+        <Route path="/checkout" element={<CheckoutPage />} />
+        <Route path="/user_profile" element={<UserProfile />} />
       </Routes>
       <Footer/>
     </div>
   );
-}
+} 
 
 export default App;

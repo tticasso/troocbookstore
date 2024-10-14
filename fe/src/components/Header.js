@@ -7,26 +7,27 @@ const Header = () => {
       <div className="w-5/6 container mx-auto px-4 font-mono">
         <div className="flex justify-between items-center py-4">
           <div className="text-2xl font-bold text-green-600">
-            TroocBookstore
+            <a href='/'>TroocBookstore</a>
+            
           </div>
           
           <nav>
             <ul className="flex space-x-6">
               <li><a href="/" className="hover:text-green-600">Home</a></li>
               <li><a href="/shop" className="hover:text-green-600">Shop</a></li>
-              <li><a href="/blog" className="hover:text-green-600">Blog</a></li>
-              <li><a href="/author" className="hover:text-green-600">Author</a></li>
+              <li><a href="/blog_list" className="hover:text-green-600">Blog</a></li>
+              <li><a href="/author_list" className="hover:text-green-600">Author</a></li>
               <li><a href="/dashboard" className="hover:text-green-600">Dashboard</a></li>
             </ul>
           </nav>
           
           <div className="flex space-x-4">
-            <button className="text-gray-600 hover:text-green-600">
+            <a href='user_profile' className="text-gray-600 hover:text-green-600">
               <User size={24} />
-            </button>
-            <button className="text-gray-600 hover:text-green-600">
+            </a>
+            <a href='/cart' className="text-gray-600 hover:text-green-600">
               <ShoppingCart size={24} />
-            </button>
+            </a>
           </div>
         </div>
       </div>

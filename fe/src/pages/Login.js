@@ -19,10 +19,9 @@ const Login = () => {
             });
 
             // Nếu đăng nhập thành công, lưu token, email và password vào localStorage
-            const { token } = response.data;
+            const { token, userId } = response.data; // Lấy userId từ phản hồi
             localStorage.setItem('token', token);
-            localStorage.setItem('email', email);
-            localStorage.setItem('password', password);
+            localStorage.setItem('userId', userId); // Lưu userId vào localStorage
 
             // Chuyển hướng người dùng đến trang chủ
             navigate('/');

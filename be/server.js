@@ -10,6 +10,7 @@ const categoryRouter = require('./routes/category.routes');
 const nationRouter = require('./routes/nation.routes');
 const cartRouter = require('./routes/cart.routes');
 const orderRouter = require('./routes/order.routes');
+const cors = require('cors')
 require('dotenv').config();
 //Khoi tao web server
 const app = express();
@@ -19,6 +20,7 @@ const app = express();
 //     methods: 'GET,POST,PUT,DELETE',
 //     credentials: true
 //   }));
+app.use(cors());
 app.use(bodyParser.json());
 app.use(morgan('dev'));
 //Dinh tuyen cho root router
@@ -35,6 +37,7 @@ app.use('/api/category', categoryRouter);
 app.use('/api/nation', nationRouter);
 app.use('/api/cart', cartRouter);
 app.use('/api/order', orderRouter);
+app.use('/uploads', express.static('./uploads'));
 //Kiem soat loi
 app.use(async (req, res, next) => {
     next(httpErrors.NotFound());

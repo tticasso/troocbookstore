@@ -1,17 +1,36 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom'; // Import useNavigate
 import { UilArrowRight, UilAngleLeftB, UilAngleRightB, UilFilter } from '@iconscout/react-unicons';
-import Login_Image from '../assets/login_Image.png';
+import axios from 'axios';
+import { useLocation } from 'react-router-dom'; // Import useLocation
 
-const BookCover = ({ title, author, price }) => {
+// Hàm để xử lý đường dẫn ảnh
+const getImagePath = (imgPath) => {
+    if (!imgPath) return '';
+    const fileName = imgPath.split('\\').pop();
+    return `http://localhost:9999/uploads/${fileName}`;
+};
+
+const BookCover = ({ title, price, img, id }) => { // Thêm id vào props
     const [isHovered, setIsHovered] = useState(false);
+    const navigate = useNavigate(); // Khởi tạo navigate
+
+    const handleBookClick = () => {
+        navigate(`/book_detail/${id}`); // Chuyển tới trang chi tiết của sách
+    };
 
     return (
         <div
             className="relative w-[216px] h-[364px] border-solid border-2 rounded-[20px] flex flex-col"
             onMouseEnter={() => setIsHovered(true)}
             onMouseLeave={() => setIsHovered(false)}
+            onClick={handleBookClick} // Thêm sự kiện click để chuyển trang
         >
-            <img src={Login_Image} alt="book" className="w-[216px] h-[287px] rounded-t-[20px]" />
+            <img 
+                src={getImagePath(img)} 
+                alt={title} 
+                className="w-[216px] h-[287px] rounded-t-[20px] object-cover cursor-pointer" // Thêm cursor-pointer
+            />
 
             {isHovered && (
                 <button className="w-full h-[54px] font-mono absolute bottom-16 left-1/2 transform -translate-x-1/2 bg-green-600 text-white rounded-lg px-4 mb-2">
@@ -28,15 +47,29 @@ const BookCover = ({ title, author, price }) => {
 };
 
 const BookList = () => {
-    const nations = ['Viet Nam', 'China', 'Japan', 'France', 'Germany', 'Korea', 'Italy', 'America'];
     const sortOptions = ['Default', 'New Books', 'Price: High - Low', 'Price: Low - High'];
-    const [selectedNations, setSelectedNations] = useState([]);
+    const [categories, setCategories] = useState([]);
+    const [selectedCategories, setSelectedCategories] = useState([]);
     const [selectedSort, setSelectedSort] = useState('Default');
     const [currentPage, setCurrentPage] = useState(1);
+    const [books, setBooks] = useState([]);
+    const location = useLocation(); // Hook để lấy query params từ URL
+    const searchParams = new URLSearchParams(location.search);
+    const searchTerm = searchParams.get('search'); // Lấy từ khóa tìm kiếm từ URL
 
-    const handleNationChange = (nation) => {
-        setSelectedNations(prev =>
-            prev.includes(nation) ? prev.filter(n => n !== nation) : [...prev, nation]
+    useEffect(() => {
+        axios.get('http://localhost:9999/api/category/list')
+            .then(response => setCategories(response.data))
+            .catch(error => console.error('Error fetching categories:', error));
+
+        axios.get('http://localhost:9999/api/book/list')
+            .then(response => setBooks(response.data))
+            .catch(error => console.error('Error fetching books:', error));
+    }, []);
+
+    const handleCategoryChange = (category) => {
+        setSelectedCategories(prev =>
+            prev.includes(category) ? prev.filter(cat => cat !== category) : [...prev, category]
         );
     };
 
@@ -44,33 +77,43 @@ const BookList = () => {
         setSelectedSort(sort);
     };
 
-    const books = [
-        { title: "Dai Nam Di Truyen", price: "78.000" },
-        { title: "Ha Noi Thoi Cam Dat", price: "78.000" },
-        { title: "Cay Cam Ngot Cua Toi", price: "78.000" },
-        { title: "Lau Dai Tren May", price: "78.000" },
-        // ... add more books as needed
-    ];
+    // Sắp xếp sách
+    const sortedBooks = [...books].sort((a, b) => {
+        if (selectedSort === 'Price: High - Low') return b.price - a.price;
+        if (selectedSort === 'Price: Low - High') return a.price - b.price;
+        if (selectedSort === 'New Books') return new Date(b.createdAt) - new Date(a.createdAt);
+        return 0;
+    });
+
+    // Lọc sách dựa trên quốc gia và từ khóa tìm kiếm
+    const filteredBooks = sortedBooks.filter(book => {
+        const matchesCategory = selectedCategories.length === 0 || book.category.some(catId => selectedCategories.includes(catId));
+        const matchesSearch = !searchTerm || book.title.toLowerCase().includes(searchTerm.toLowerCase());
+        return matchesCategory && matchesSearch;
+    });
 
     return (
         <div className="max-w-7xl mx-auto px-4">
             <h1 className="text-4xl font-bold text-center text-green-600 mb-8">Our Books</h1>
 
             <div className="flex mb-6">
-                <div className="w-1/4 pr-4">
-                    <h2 className="text-xl font-semibold mb-2 text-green-600">Nation</h2>
-                    {nations.map(nation => (
-                        <div key={nation} className="flex items-center mb-2">
-                            <input
-                                type="checkbox"
-                                id={nation}
-                                checked={selectedNations.includes(nation)}
-                                onChange={() => handleNationChange(nation)}
-                                className="mr-2"
-                            />
-                            <label htmlFor={nation}>{nation}</label>
-                        </div>
-                    ))}
+                <div className="w-1/4">
+                    <h2 className="text-2xl font-bold">Categories</h2>
+                    <ul>
+                        {categories.map(category => (
+                            <li key={category._id}>
+                                <label>
+                                    <input
+                                        type="checkbox"
+                                        value={category._id}
+                                        checked={selectedCategories.includes(category._id)}
+                                        onChange={() => handleCategoryChange(category._id)}
+                                    />
+                                    {category.name}
+                                </label>
+                            </li>
+                        ))}
+                    </ul>
                 </div>
 
                 <div className="w-3/4">
@@ -94,24 +137,15 @@ const BookList = () => {
                         </div>
                     </div>
 
-                    <div className="grid grid-cols-4 gap-6 mb-10">
-                        {books.map((book, index) => (
-                            <BookCover key={index} title={book.title} price={book.price} />
-                        ))}
-                    </div>
-                    <div className="grid grid-cols-4 gap-6 mb-10">
-                        {books.map((book, index) => (
-                            <BookCover key={index} title={book.title} price={book.price} />
-                        ))}
-                    </div>
-                    <div className="grid grid-cols-4 gap-6 mb-10">
-                        {books.map((book, index) => (
-                            <BookCover key={index} title={book.title} price={book.price} />
-                        ))}
-                    </div>
-                    <div className="grid grid-cols-4 gap-6 mb-10">
-                        {books.map((book, index) => (
-                            <BookCover key={index} title={book.title} price={book.price} />
+                    <div className="grid grid-cols-4 gap-4">
+                        {filteredBooks.map(book => (
+                            <BookCover
+                                key={book._id}
+                                title={book.title}
+                                price={book.price}
+                                img={book.img}
+                                id={book._id}
+                            />
                         ))}
                     </div>
 
