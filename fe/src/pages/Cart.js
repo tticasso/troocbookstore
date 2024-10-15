@@ -16,8 +16,12 @@ const Cart = () => {
       try {
         const response = await fetch(`http://localhost:9999/api/cart/${userId}`);
         const data = await response.json();
+        console.log(data);
+        
         setItems(data.items);
         setTotal(data.total_price);
+        console.log(data.total_price);
+        
       } catch (error) {
         console.error("Error fetching cart data:", error);
       }
@@ -53,7 +57,7 @@ const Cart = () => {
           : item
       );
       setItems(updatedItems);
-      setTotal(updatedItems.reduce((sum, item) => sum + item.price, 0));
+      setTotal(updatedItems.reduce((sum, item) => sum + item.price * item.quantity, 0));
       window.location.reload();
     } catch (error) {
       console.error("Error updating quantity:", error);

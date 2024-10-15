@@ -1,15 +1,24 @@
 import React, { useEffect, useState } from 'react';
-import authorPlaceholder from '../assets/author.png'; // Placeholder nếu không có hình ảnh
+import authorPlaceholder from '../assets/author.png';
 import topReview from '../assets/topReview.png';
 import { UilAngleLeftB, UilAngleRightB } from '@iconscout/react-unicons';
 import axios from 'axios';
+import { useNavigate } from 'react-router-dom'; // Import useNavigate
 
-const AuthorCard = ({ name, image }) => (
-  <div className="w-[221px] h-[270px] flex flex-col items-center">
-    <img src={image} alt={name} className="w-[190px] h-[198px] rounded-full object-cover" />
-    <p className="text-[24px] leading-[31px] mt-1 font-mono">{name}</p>
-  </div>
-);
+const AuthorCard = ({ name, image, authorId }) => {
+  const navigate = useNavigate(); // Khởi tạo navigate
+
+  const handleAuthorClick = () => {
+    navigate(`/author_detail/${authorId}`); // Chuyển hướng đến trang chi tiết tác giả
+  };
+
+  return (
+    <div className="w-[221px] h-[270px] flex flex-col items-center cursor-pointer" onClick={handleAuthorClick}>
+      <img src={image} alt={name} className="w-[190px] h-[198px] rounded-full object-cover" />
+      <p className="text-[24px] leading-[31px] mt-1 font-mono">{name}</p>
+    </div>
+  );
+};
 
 const TopReviewCard = ({ title, author, date, image }) => (
   <div className="flex items-center space-x-4 mb-4">
@@ -32,13 +41,13 @@ const AuthorList = () => {
   ];
 
   useEffect(() => {
-    // Gọi API để lấy danh sách tác giả
     const fetchAuthors = async () => {
       try {
         const response = await axios.get('http://localhost:9999/api/author/list');
         const authorData = response.data.map(author => ({
           name: author.full_name,
-          image: `http://localhost:9999/${author.img}` || authorPlaceholder, // Tạo đường dẫn hình ảnh
+          image: `http://localhost:9999/${author.img}` || authorPlaceholder,
+          authorId: author._id, // Lưu id của tác giả
         }));
         setAuthors(authorData);
       } catch (error) {
@@ -47,7 +56,7 @@ const AuthorList = () => {
     };
 
     fetchAuthors();
-  }, []); // Gọi chỉ một lần khi component được mount
+  }, []);
 
   return (
     <div className="max-w-7xl mx-auto px-4 mb-20">
