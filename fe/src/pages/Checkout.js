@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from 'react';
 import { ChevronLeft, HandCoins } from 'lucide-react';
-import cartImg from '../assets/cart.png';
 
 const CheckoutPage = () => {
   const [formData, setFormData] = useState({
@@ -53,6 +52,9 @@ const CheckoutPage = () => {
 
       if (!response.ok) {
         throw new Error('Đặt hàng thất bại!');
+      }
+      else {
+        window.location.href = '/'
       }
 
       const result = await response.json();
