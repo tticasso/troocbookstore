@@ -1,5 +1,4 @@
 import React from 'react';
-import { Card, Row, Col } from 'react-bootstrap';
 
 const DashboardOverview = () => {
   const stats = {
@@ -9,41 +8,35 @@ const DashboardOverview = () => {
     orders: 300,
   };
 
+  const cardStyles = "bg-blue-500 text-white p-4 rounded-lg shadow-md";
+
   return (
-    <Row>
-      <Col md={3}>
-        <Card bg="primary" text="white" className="mb-3">
-          <Card.Body>
-            <Card.Title>Users</Card.Title>
-            <Card.Text>{stats.users}</Card.Text>
-          </Card.Body>
-        </Card>
-      </Col>
-      <Col md={3}>
-        <Card bg="success" text="white" className="mb-3">
-          <Card.Body>
-            <Card.Title>Books</Card.Title>
-            <Card.Text>{stats.books}</Card.Text>
-          </Card.Body>
-        </Card>
-      </Col>
-      <Col md={3}>
-        <Card bg="info" text="white" className="mb-3">
-          <Card.Body>
-            <Card.Title>Authors</Card.Title>
-            <Card.Text>{stats.authors}</Card.Text>
-          </Card.Body>
-        </Card>
-      </Col>
-      <Col md={3}>
-        <Card bg="warning" text="white" className="mb-3">
-          <Card.Body>
-            <Card.Title>Orders</Card.Title>
-            <Card.Text>{stats.orders}</Card.Text>
-          </Card.Body>
-        </Card>
-      </Col>
-    </Row>
+    <div className="flex gap-4">
+      <div className="w-1/4">
+        <div className={cardStyles}>
+          <h2 className="text-lg font-bold">Users</h2>
+          <p>{stats.users}</p>
+        </div>
+      </div>
+      <div className="w-1/4">
+        <div className="bg-green-500 text-white p-4 rounded-lg shadow-md">
+          <h2 className="text-lg font-bold">Books</h2>
+          <p>{stats.books}</p>
+        </div>
+      </div>
+      <div className="w-1/4">
+        <div className="bg-teal-500 text-white p-4 rounded-lg shadow-md">
+          <h2 className="text-lg font-bold">Authors</h2>
+          <p>{stats.authors}</p>
+        </div>
+      </div>
+      <div className="w-1/4">
+        <div className="bg-yellow-500 text-white p-4 rounded-lg shadow-md">
+          <h2 className="text-lg font-bold">Orders</h2>
+          <p>{stats.orders}</p>
+        </div>
+      </div>
+    </div>
   );
 };
 

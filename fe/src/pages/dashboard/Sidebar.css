@@ -1,29 +1,19 @@
 .sidebar {
-    width: 250px;
-    height: 100vh;
-    position: fixed;
-    background-color: #343a40; /* Màu nền */
-  }
-  
-  .sidebar .nav-link {
-    font-size: 18px;
-    margin-bottom: 10px;
-    padding: 10px;
-    border-radius: 5px;
-    transition: background-color 0.3s ease;
-  }
-  
-  .sidebar .nav-link:hover {
-    background-color: #495057; /* Màu nền khi hover */
-    text-decoration: none;
-  }
-  
-  .sidebar .nav-link i {
-    margin-right: 10px; /* Tạo khoảng cách giữa icon và text */
-  }
-  
-  .sidebar .nav-link.active {
-    background-color: #007bff; /* Màu nền cho mục đang active */
-    color: white;
-  }
-  
+  @apply w-64 h-screen fixed bg-gray-800; /* Apply Tailwind classes for background color and fixed positioning */
+}
+
+.sidebar .nav-link {
+  @apply text-lg my-2 px-4 py-2 rounded-lg transition duration-300; /* Replace with Tailwind for padding, margin, and transitions */
+}
+
+.sidebar .nav-link:hover {
+  @apply bg-gray-700 no-underline; /* Tailwind hover state */
+}
+
+.sidebar .nav-link i {
+  @apply mr-2; /* Margin using Tailwind */
+}
+
+.sidebar .nav-link.active {
+  @apply bg-blue-600 text-white; /* Active state with Tailwind classes */
+}

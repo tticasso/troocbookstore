@@ -1,10 +1,8 @@
 import React from 'react';
 import { Line } from 'react-chartjs-2';
 import { Chart as ChartJS, CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend } from 'chart.js';
-import { Container, Row, Col, Card } from 'react-bootstrap';
-import './OrderChart.css'; // File CSS tuỳ chỉnh của bạn
+import './OrderChart.css'; // Keep custom CSS for chart
 
-// Đăng ký các thành phần của Chart.js
 ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend);
 
 const data = {
@@ -16,14 +14,14 @@ const data = {
       fill: false,
       backgroundColor: 'rgba(75,192,192,1)',
       borderColor: 'rgba(75,192,192,1)',
-      tension: 0.1, // Làm cho biểu đồ mượt mà hơn
+      tension: 0.1,
     },
   ],
 };
 
 const options = {
   responsive: true,
-  maintainAspectRatio: false, // Để cho biểu đồ co giãn với thẻ chứa nó
+  maintainAspectRatio: false,
   scales: {
     y: {
       beginAtZero: true,
@@ -33,22 +31,16 @@ const options = {
 
 const OrderChart = () => {
   return (
-    <Container className="mt-5">
-      <Row>
-        <Col md={12}>
-          <Card className="shadow-sm">
-            <Card.Header className="bg-primary text-white text-center">
-              <h4>Order Statistics</h4>
-            </Card.Header>
-            <Card.Body>
-              <div style={{ height: '400px' }}>
-                <Line data={data} options={options} />
-              </div>
-            </Card.Body>
-          </Card>
-        </Col>
-      </Row>
-    </Container>
+    <div className="mt-5">
+      <div className="shadow-md rounded-lg overflow-hidden">
+        <div className="bg-blue-500 text-white text-center p-4">
+          <h4 className="text-lg font-semibold">Order Statistics</h4>
+        </div>
+        <div className="p-4" style={{ height: '400px' }}>
+          <Line data={data} options={options} />
+        </div>
+      </div>
+    </div>
   );
 };
 
