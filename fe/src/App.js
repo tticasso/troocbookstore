@@ -12,8 +12,9 @@ import CheckoutPage from "./pages/Checkout";
 import Footer from "./components/Footer";
 import Header from "./components/Header";
 import UserProfile from "./pages/UserProfile";
-import LayoutPage from "./pages/Dashboard/Dashboard";
-import UserManagement from "./pages/Dashboard/UserManagement";
+import LayoutPage from "./pages/dashboard/DashBoard";
+import UserManagement from "./pages/dashboard/UserManagement";
+import AuthorManagement from "./pages/dashboard/AuthorManagement";
 
 function App() {
   const location = useLocation(); // Lấy URL hiện tại
@@ -44,6 +45,7 @@ function App() {
         <Route path="/user_profile" element={<UserProfile />} />
         <Route path="/admin" element={<LayoutPage />}>
           <Route path="user-manage" element={<UserManagement />} />
+          <Route path="author-manage" element={<AuthorManagement />} />
         </Route>
       </Routes>
 

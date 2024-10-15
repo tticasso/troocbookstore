@@ -16,21 +16,25 @@ const upload = multer({ storage: storage });
 
 async function createAuthor(req, res) {
     const { full_name, dob, introduce } = req.body;
-    const dobFormatted = new Date(dob.split('/').reverse().join('-'));
 
     try {
+        const dobFormatted = dob ? new Date(dob.split('/').reverse().join('-')) : null;
+
         const newAuthor = new Author({
             full_name,
             dob: dobFormatted,
-            img: req.file.path,
+            img: req.file ? req.file.path : '', // Kiểm tra nếu ảnh không được tải lên
             introduce
         });
+
         await newAuthor.save();
         res.status(201).json({ message: 'Author created successfully!', author: newAuthor });
     } catch (error) {
+        console.error('Error creating author:', error); // Thêm log lỗi
         res.status(500).json({ message: 'Error creating author', error });
     }
 }
+
 
 async function listAuthors(req, res) {
     try {
@@ -85,7 +89,7 @@ async function deleteAuthor(req, res) {
 }
 
 const authorController = {
-    createAuthor: [upload.single('img'), createAuthor], 
+    createAuthor: [upload.single('img'), createAuthor],
     listAuthors,
     getAuthor,
     updateAuthor: [upload.single('img'), updateAuthor],
