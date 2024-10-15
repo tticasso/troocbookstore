@@ -290,28 +290,31 @@ const UserProfile = () => {
             {orders.length > 0 ? (
               orders.map((order) => (
                 <tr key={order._id}>
-                  <td className="px-4 py-2">{order._id}</td>
+                  <td className="px-4 py-2 max-w-[100px] truncate">{order._id}</td>
                   <td className="px-4 py-2">{formatDate(order.createdAt)}</td>
                   <td className="px-4 py-2">{order.total_price} VND</td>
                   <td className="px-4 py-2">{order.status}</td>
                   <td className="px-4 py-2">
                     <div className='flex gap-4'>
-                    <button
-                      className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-1 px-2 rounded"
-                      onClick={() => handleShowOrderDetails(order._id)}
-                    >
-                      Xem chi tiết
-                    </button>
-                    {order.status !== 'cancel' && (
-                      <button
-                        className="bg-blue-500 text-white text-white font-bold py-1 px-2 rounded"
-                        onClick={() => handleCancelOrder(order._id)}
-                      >
-                        Hủy đơn hàng
-                      </button>
-                    )}
+
+                      {order.status !== 'cancel' && (
+                        <button
+                          className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-1 px-2 rounded"
+                          onClick={() => handleShowOrderDetails(order._id)}
+                        >
+                          Xem chi tiết
+                        </button>
+                      )}
+                      {order.status === 'pending' && (
+                        <button
+                          className="bg-red-500 text-white text-white font-bold py-1 px-2 rounded"
+                          onClick={() => handleCancelOrder(order._id)}
+                        >
+                          Hủy đơn hàng
+                        </button>
+                      )}
                     </div>
-                   
+
                   </td>
                 </tr>
               ))
@@ -391,13 +394,13 @@ const UserProfile = () => {
             </div>
             <div>
               {selectedOrder.status !== 'success' && selectedOrder.status !== 'cancel' && (
-              <button
-                className="mt-4 text-green-500 hover:text-green-700"
-                onClick={() => handleConfirmReceived(selectedOrder._id)}
-              >
-                Đã nhận được hàng
-              </button>
-            )}
+                <button
+                  className="mt-4 text-green-500 hover:text-green-700"
+                  onClick={() => handleConfirmReceived(selectedOrder._id)}
+                >
+                  Đã nhận được hàng
+                </button>
+              )}
             </div>
 
           </div>
