@@ -82,6 +82,12 @@ const LayoutPage = () => {
             link: "/admin/user-manage",
         },
         {
+            key: "authors",
+            icon: <UsergroupAddOutlined />,
+            label: "Tác giả",
+            link: "/admin/author-manage",
+        },
+        {
             key: "logout",
             icon: <LogoutOutlined />,
             label: "Đăng xuất",

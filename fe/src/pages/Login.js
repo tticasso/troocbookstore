@@ -19,12 +19,15 @@ const Login = () => {
             });
 
             // Nếu đăng nhập thành công, lưu token, email và password vào localStorage
-            const { token, userId } = response.data; // Lấy userId từ phản hồi
+            const { token, userId, role } = response.data; // Lấy userId từ phản hồi
             localStorage.setItem('token', token);
             localStorage.setItem('userId', userId); // Lưu userId vào localStorage
-
-            // Chuyển hướng người dùng đến trang chủ
-            navigate('/');
+            if (role === 'user') {
+                navigate('/');
+            } else {
+                navigate('/admin');
+            }
+            
         } catch (error) {
             // Nếu đăng nhập không thành công, hiển thị thông báo lỗi
             if (error.response && error.response.data.message === 'Invalid credentials') {
