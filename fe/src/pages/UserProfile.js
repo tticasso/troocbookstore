@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import { Eye, EyeOff, Edit2, Save } from 'lucide-react';
+import { Eye, EyeOff, Edit2, Save, X } from 'lucide-react';
+import axios from 'axios';
 
 const UserProfile = () => {
-  const userId = localStorage.getItem('userId'); // Lấy userId từ localStorage
+  const userId = localStorage.getItem('userId');
   const [user, setUser] = useState(null);
   const [showPassword, setShowPassword] = useState(false);
   const [editing, setEditing] = useState(false);
@@ -13,10 +14,11 @@ const UserProfile = () => {
     phone: '',
     confirmPassword: '',
   });
+  const [orders, setOrders] = useState([]);
+  const [selectedOrder, setSelectedOrder] = useState(null);
+  const [showOrderDetails, setShowOrderDetails] = useState(false);
+  const [errorMessage, setErrorMessage] = useState('');
 
-  const [orders, setOrders] = useState([]); // Khởi tạo đơn hàng rỗng
-
-  // Lấy thông tin người dùng
   useEffect(() => {
     const fetchUserData = async () => {
       const response = await fetch(`http://localhost:9999/api/user/${userId}`);
@@ -33,19 +35,60 @@ const UserProfile = () => {
     fetchUserData();
   }, [userId]);
 
-  // Lấy danh sách đơn hàng
   useEffect(() => {
     const fetchOrders = async () => {
       try {
         const response = await fetch(`http://localhost:9999/api/order/${userId}`);
         const data = await response.json();
-        setOrders(data); // Cập nhật state với dữ liệu đơn hàng
+        setOrders(data);
       } catch (error) {
         console.error("Lỗi khi tải đơn hàng:", error);
       }
     };
     fetchOrders();
   }, [userId]);
+
+  const handleShowOrderDetails = async (orderId) => {
+    try {
+      const response = await fetch(`http://localhost:9999/api/order/detail/${orderId}`);
+      const data = await response.json();
+      setSelectedOrder(data);
+      setShowOrderDetails(true);
+    } catch (error) {
+      console.error("Lỗi khi tải chi tiết đơn hàng:", error);
+    }
+  };
+
+  const handleCancelOrder = async (orderId) => {
+    const confirmCancel = window.confirm('Bạn có chắc chắn muốn hủy đơn hàng này không?');
+    if (confirmCancel) {
+      try {
+        await axios.put(`http://localhost:9999/api/order/cancel/${orderId}`);
+
+        setOrders(orders.map(order =>
+          order.id === orderId ? { ...order, status: 'cancel' } : order
+        ));
+      } catch (error) {
+        setErrorMessage('Không thể hủy đơn hàng. Vui lòng thử lại.');
+        console.error(error);
+      }
+    }
+  };
+
+  const handleConfirmReceived = async (orderId) => {
+    const confirmReceived = window.confirm('Bạn có chắc chắn đã nhận được hàng chưa?');
+    if (confirmReceived) {
+      try {
+        await axios.put(`http://localhost:9999/api/order/success/${orderId}`);
+        setOrders(orders.map(order =>
+          order.id === orderId ? { ...order, status: 'success' } : order
+        ));
+      } catch (error) {
+        setErrorMessage('Không thể cập nhật trạng thái đơn hàng. Vui lòng thử lại.');
+        console.error(error);
+      }
+    }
+  };
 
   const handleEdit = () => setEditing(true);
 
@@ -106,7 +149,10 @@ const UserProfile = () => {
       alert("Cập nhật thất bại!"); // Thông báo lỗi
     }
   };
-
+  const handleClosePopup = () => {
+    setShowOrderDetails(false);
+    setSelectedOrder(null);
+  };
   // Hàm handleLogout để xử lý sự kiện đăng xuất
   const handleLogout = () => {
     localStorage.removeItem('userId');
@@ -228,7 +274,7 @@ const UserProfile = () => {
           Đăng xuất
         </button>
       </div>
-      <div className="w-1/2 bg-white shadow-md rounded px-8 pt-6 pb-8">
+      <div className=" bg-white shadow-md rounded px-8 pt-6 pb-8">
         <h2 className="text-xl font-bold mb-4">Đơn hàng của tôi</h2>
         <table className="w-full">
           <thead>
@@ -237,6 +283,7 @@ const UserProfile = () => {
               <th className="px-4 py-2">Ngày đặt</th>
               <th className="px-4 py-2">Tổng tiền</th>
               <th className="px-4 py-2">Trạng thái</th>
+              <th className="px-4 py-2">Chi tiết</th>
             </tr>
           </thead>
           <tbody>
@@ -247,11 +294,30 @@ const UserProfile = () => {
                   <td className="px-4 py-2">{formatDate(order.createdAt)}</td>
                   <td className="px-4 py-2">{order.total_price} VND</td>
                   <td className="px-4 py-2">{order.status}</td>
+                  <td className="px-4 py-2">
+                    <div className='flex gap-4'>
+                    <button
+                      className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-1 px-2 rounded"
+                      onClick={() => handleShowOrderDetails(order._id)}
+                    >
+                      Xem chi tiết
+                    </button>
+                    {order.status !== 'cancel' && (
+                      <button
+                        className="bg-blue-500 text-white text-white font-bold py-1 px-2 rounded"
+                        onClick={() => handleCancelOrder(order._id)}
+                      >
+                        Hủy đơn hàng
+                      </button>
+                    )}
+                    </div>
+                   
+                  </td>
                 </tr>
               ))
             ) : (
               <tr>
-                <td colSpan="4" className="text-center py-4">
+                <td colSpan="5" className="text-center py-4">
                   Không có đơn hàng nào.
                 </td>
               </tr>
@@ -259,6 +325,85 @@ const UserProfile = () => {
           </tbody>
         </table>
       </div>
+
+      {/* Popup chi tiết đơn hàng */}
+      {showOrderDetails && selectedOrder && (
+        <div className="fixed inset-0 bg-gray-900 bg-opacity-50 flex justify-center items-center">
+          <div className="bg-white rounded-lg shadow-lg w-3/4 md:w-1/2 p-6 relative">
+            <button className="absolute top-2 right-2 text-gray-500 hover:text-gray-700" onClick={handleClosePopup}>
+              <X size={24} />
+            </button>
+            <h2 className="text-xl font-bold mb-4">Chi tiết đơn hàng</h2>
+            <div className="w-full flex flex-col md:flex-row gap-4">
+              {/* Cột thông tin đơn hàng */}
+              <div className="w-1/2 flex-grow">
+                <h3 className="font-bold">Thông tin đơn hàng</h3>
+                <div className="flex flex-col gap-2">
+                  <p><strong>Mã đơn hàng:</strong> {selectedOrder._id}</p>
+                  <p><strong>Ngày đặt:</strong> {formatDate(selectedOrder.createdAt)}</p>
+                  <p><strong>Phí vận chuyển:</strong> {selectedOrder.shipping_price.toLocaleString()} VND</p>
+                  <p><strong>Trạng thái:</strong> {selectedOrder.status}</p>
+                  <p><strong>Tên người nhận:</strong> {selectedOrder.name}</p>
+                  <p><strong>Email:</strong> {selectedOrder.email}</p>
+                  <p><strong>Số điện thoại:</strong> {selectedOrder.phone}</p>
+                  <p><strong>Địa chỉ:</strong> {selectedOrder.address}</p>
+                  <p><strong>Ghi chú:</strong> {selectedOrder.note || 'Không có'}</p>
+                </div>
+              </div>
+
+              {/* Cột sản phẩm */}
+              <div className="w-1/2 flex-grow">
+                <h3 className="font-bold">Sản phẩm</h3>
+                {selectedOrder.items.map((item) => (
+                  <div key={item._id} className="flex items-start border-b py-2">
+                    <div className="relative">
+                      <img
+                        src={`http://localhost:9999/${item.book_id.img}`}
+                        alt={item.book_id.title}
+                        className="w-16 h-20 object-cover rounded"
+                      />
+                      <span className="absolute -top-2 -right-2 bg-blue-500 text-white rounded-full w-5 h-5 flex items-center justify-center text-xs">
+                        {item.quantity}
+                      </span>
+                    </div>
+                    <div className="ml-4 flex-grow">
+                      <h3 className="font-semibold">{item.book_id.title}</h3>
+                      <p>{item.quantity} x {item.price.toLocaleString()} VND</p>
+                    </div>
+                    <span className="font-semibold">{(item.quantity * item.price).toLocaleString()} VND</span>
+
+                  </div>
+
+                ))}
+
+              </div>
+
+            </div>
+
+            {/* Tổng tiền */}
+            <div></div>
+            <div className="mt-4 border-t flex-col pt-4">
+              <p><strong>Tổng tiền sản phẩm:</strong> {selectedOrder.products_price.toLocaleString()} VND</p>
+              <p><strong>Phí vận chuyển:</strong> {selectedOrder.shipping_price.toLocaleString()} VND</p>
+              <p className="text-xl font-bold">
+                <strong>Tổng cộng:</strong> {selectedOrder.total_price.toLocaleString()} VND
+              </p>
+            </div>
+            <div>
+              {selectedOrder.status !== 'success' && selectedOrder.status !== 'cancel' && (
+              <button
+                className="mt-4 text-green-500 hover:text-green-700"
+                onClick={() => handleConfirmReceived(selectedOrder._id)}
+              >
+                Đã nhận được hàng
+              </button>
+            )}
+            </div>
+
+          </div>
+        </div>
+      )}
+
     </div>
   );
 };
