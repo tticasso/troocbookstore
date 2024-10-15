@@ -12,9 +12,12 @@ import CheckoutPage from "./pages/Checkout";
 import Footer from "./components/Footer";
 import Header from "./components/Header";
 import UserProfile from "./pages/UserProfile";
-import LayoutPage from "./pages/dashboard/DashBoard";
-import UserManagement from "./pages/dashboard/UserManagement";
-import AuthorManagement from "./pages/dashboard/AuthorManagement";
+import LayoutPage from "./pages/Dashboard/DashBoard";
+import UserManagement from "./pages/Dashboard/UserManagement";
+import AuthorManagement from "./pages/Dashboard/AuthorManagement";
+import NationManagement from "./pages/Dashboard/NationManagement";
+import CategoryManagement from "./pages/Dashboard/CategoryManagement";
+import BookManagement from "./pages/Dashboard/BookManagement";
 
 function App() {
   const location = useLocation(); // Lấy URL hiện tại
@@ -46,6 +49,9 @@ function App() {
         <Route path="/admin" element={<LayoutPage />}>
           <Route path="user-manage" element={<UserManagement />} />
           <Route path="author-manage" element={<AuthorManagement />} />
+          <Route path="nation-manage" element={<NationManagement />} />
+          <Route path="category-manage" element={<CategoryManagement />} />
+          <Route path="book-manage" element={<BookManagement />} />
         </Route>
       </Routes>
 
