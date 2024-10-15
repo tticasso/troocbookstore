@@ -17,6 +17,9 @@ import {
     UserOutlined,
     UserSwitchOutlined,
     UsergroupAddOutlined,
+    GlobalOutlined,
+    ReadOutlined,
+    BookOutlined
 } from "@ant-design/icons";
 import {
     Avatar,
@@ -80,6 +83,24 @@ const LayoutPage = () => {
             icon: <UsergroupAddOutlined />,
             label: "Người dùng",
             link: "/admin/user-manage",
+        },
+        {
+            key: "nations",
+            icon: <GlobalOutlined />,
+            label: "Quốc gia",
+            link: "/admin/nation-manage",
+        },
+        {
+            key: "categories",
+            icon: <ReadOutlined />,
+            label: "Danh mục",
+            link: "/admin/category-manage",
+        },
+        {
+            key: "books",
+            icon: <BookOutlined />,
+            label: "Sách",
+            link: "/admin/book-manage",
         },
         {
             key: "authors",
