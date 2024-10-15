@@ -1,24 +1,176 @@
-import React from 'react';
-import { Container, Row, Col } from 'react-bootstrap';
-import Sidebar from './Sidebar';
-import DashboardOverview from './DashBoardOverview';
-import OrderChart from './OrderChart';
+import {
+    BellOutlined,
+    CalendarOutlined,
+    ClockCircleOutlined,
+    DashboardOutlined,
+    FileOutlined,
+    GroupOutlined,
+    LogoutOutlined,
+    MedicineBoxOutlined,
+    MenuFoldOutlined,
+    MenuUnfoldOutlined,
+    MessageOutlined,
+    ReconciliationOutlined,
+    ReconciliationTwoTone,
+    ShoppingCartOutlined,
+    ShoppingOutlined,
+    UserOutlined,
+    UserSwitchOutlined,
+    UsergroupAddOutlined,
+} from "@ant-design/icons";
+import {
+    Avatar,
+    Button,
+    Card,
+    Flex,
+    Layout,
+    List,
+    Menu,
+    Popover,
+    Space,
+    Tag,
+    Typography,
+    theme,
+} from "antd";
 
-const Dashboard = () => {
-  return (
-    <Container fluid>
-      <Row>
-        <Col md={2}>
-          <Sidebar />
-        </Col>
-        <Col md={10}>
-          <h1>Admin Dashboard</h1>
-          <DashboardOverview />
-          <OrderChart />
-        </Col>
-      </Row>
-    </Container>
-  );
+import Title from "./Title";
+import { useEffect, useMemo, useState } from "react";
+import dayjs from "dayjs";
+import { Link, Outlet, useNavigate } from "react-router-dom";
+
+const { Header, Sider, Content } = Layout;
+
+const Clock = () => {
+    const [time, setTime] = useState(dayjs());
+
+    useEffect(() => {
+        const intervalId = setInterval(() => {
+            setTime(dayjs());
+        }, 1000);
+        return () => clearInterval(intervalId);
+    }, []);
+
+    return (
+        <Flex align="center" justify="center">
+            <Card styles={{ body: { padding: 10 } }}>
+                <Title
+                    styleContainer={{ margin: 0 }}
+                    justify="center"
+                    title={
+                        <Space>
+                            <ClockCircleOutlined />
+                            {time.format("HH:mm:ss")}
+                        </Space>
+                    }
+                />
+            </Card>
+        </Flex>
+    );
 };
 
-export default Dashboard;
+const LayoutPage = () => {
+    const [collapsed, setCollapsed] = useState(false);
+    const {
+        token: { colorBgContainer, borderRadiusLG },
+    } = theme.useToken();
+    const navigate = useNavigate();
+    const menuSidebars = [
+        {
+            key: "users",
+            icon: <UsergroupAddOutlined />,
+            label: "Người dùng",
+            link: "/admin/user-manage",
+        },
+        {
+            key: "logout",
+            icon: <LogoutOutlined />,
+            label: "Đăng xuất",
+            link: "/logout",
+
+        },
+    ];
+
+    const selectedMenu = () => {
+        const menu = menuSidebars.find((menu) =>
+            window.location.pathname.includes(menu.link)
+        );
+
+        if (menu) {
+            return [menu.key];
+        }
+        return [];
+    };
+
+    const onClickMenu = ({ item }) => {
+        const { link } = item.props;
+
+        if (link) {
+            navigate(link);
+        }
+    };
+
+    return (
+        <Layout style={{ height: "100vh" }}>
+            <Sider
+                trigger={null}
+                collapsible
+                collapsed={collapsed}
+                theme="light"
+                width={250}
+            >
+                <div style={{
+                    height: 64,
+                    display: "flex",
+                    justifyContent: "center",
+                    alignItems: "center",
+                    flexDirection: "column",
+                }}>
+                    <Typography.Title level={5} style={{ fontWeight: "bold", textAlign: "center" }}>
+                        Health Care
+                    </Typography.Title>
+                    {!collapsed && <Tag color="red">ADMIN</Tag>}
+                </div>
+                <Menu
+                    theme="light"
+                    mode="inline"
+                    defaultSelectedKeys={selectedMenu()}
+                    items={menuSidebars}
+                    onClick={onClickMenu}
+                />
+            </Sider>
+            <Layout>
+                <Header style={{ padding: 0, background: colorBgContainer }}>
+                    <Flex justify="space-between" align="center">
+                        <Button
+                            type="text"
+                            icon={collapsed ? <MenuUnfoldOutlined /> : <MenuFoldOutlined />}
+                            onClick={() => setCollapsed(!collapsed)}
+                            style={{ fontSize: "16px", width: 64, height: 64 }}
+                        />
+                        <Clock />
+                        <Flex style={{ marginRight: 20 }} align="center" gap={20}>
+                            <Button type="text" icon={<BellOutlined />} />
+                            <Button type="text" icon={<UserOutlined />}>
+                                Admin
+                            </Button>
+                        </Flex>
+                    </Flex>
+                </Header>
+                <Content
+                    style={{
+                        margin: "24px 16px",
+                        padding: 24,
+                        minHeight: 280,
+                        background: colorBgContainer,
+                        borderRadius: borderRadiusLG,
+                        overflow: "auto",
+                    }}
+                >
+                    <Outlet />
+                </Content>
+            </Layout>
+        </Layout>
+    );
+};
+
+export default LayoutPage;

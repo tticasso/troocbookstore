@@ -14,9 +14,8 @@ const Header = () => {
           </div>
 
           <nav>
-            <ul className="flex space-x-6">
-              <li><a href="/" className="hover:text-green-600">Home</a></li>
-              <li><a href="/shop" className="hover:text-green-600">Shop</a></li>
+            <ul className="flex space-x-6 gap-20 text-[20px] font-bold">
+              <li><a href="/book_list" className="hover:text-green-600">Shop</a></li>
               <li><a href="/blog_list" className="hover:text-green-600">Blog</a></li>
               <li><a href="/author_list" className="hover:text-green-600">Author</a></li>
             </ul>
