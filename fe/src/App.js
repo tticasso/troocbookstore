@@ -18,6 +18,7 @@ import AuthorManagement from "./pages/Dashboard/AuthorManagement";
 import NationManagement from "./pages/Dashboard/NationManagement";
 import CategoryManagement from "./pages/Dashboard/CategoryManagement";
 import BookManagement from "./pages/Dashboard/BookManagement";
+import OrderManagement from "./pages/Dashboard/OrderManagement";
 
 function App() {
   const location = useLocation(); // Lấy URL hiện tại
@@ -52,6 +53,8 @@ function App() {
           <Route path="nation-manage" element={<NationManagement />} />
           <Route path="category-manage" element={<CategoryManagement />} />
           <Route path="book-manage" element={<BookManagement />} />
+          <Route path="order-manage" element={<OrderManagement />} />
+
         </Route>
       </Routes>
 
