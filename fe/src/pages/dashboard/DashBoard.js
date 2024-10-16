@@ -103,6 +103,12 @@ const LayoutPage = () => {
             link: "/admin/book-manage",
         },
         {
+            key: "orders",
+            icon: <BookOutlined />,
+            label: "Order",
+            link: "/admin/order-manage",
+        },
+        {
             key: "authors",
             icon: <UsergroupAddOutlined />,
             label: "Tác giả",
@@ -153,7 +159,7 @@ const LayoutPage = () => {
                     flexDirection: "column",
                 }}>
                     <Typography.Title level={5} style={{ fontWeight: "bold", textAlign: "center" }}>
-                        Health Care
+                        Trooc Bookstore
                     </Typography.Title>
                     {!collapsed && <Tag color="red">ADMIN</Tag>}
                 </div>
