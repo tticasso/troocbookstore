@@ -7,6 +7,7 @@ cartRouter.use(bodyParser.json());
 
 cartRouter.post('/add', cartController.addToCart);
 cartRouter.get('/:user_id', cartController.getCart);
+cartRouter.get('/count/:user_id', cartController.getCartItemCount);
 cartRouter.put('/update', cartController.updateCart);
 cartRouter.delete('/remove', cartController.removeFromCart);
 cartRouter.delete('/clear', cartController.clearCart);

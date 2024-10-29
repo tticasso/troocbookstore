@@ -1,5 +1,6 @@
 const db = require('../models');
 const Author = db.author;
+const Book = db.book; // Import model Book để lấy danh sách sách của tác giả
 const multer = require('multer');
 const path = require('path');
 
@@ -34,7 +35,6 @@ async function createAuthor(req, res) {
         res.status(500).json({ message: 'Error creating author', error });
     }
 }
-
 
 async function listAuthors(req, res) {
     try {
@@ -88,12 +88,25 @@ async function deleteAuthor(req, res) {
     }
 }
 
+// Lấy danh sách sách của một tác giả
+async function getBooksByAuthor(req, res) {
+    const { authorId } = req.params;
+    try {
+        const books = await Book.find({ author: authorId });
+        res.status(200).json(books);
+    } catch (error) {
+        console.error('Error fetching books for author:', error);
+        res.status(500).json({ message: 'Error fetching books for author', error });
+    }
+}
+
 const authorController = {
     createAuthor: [upload.single('img'), createAuthor],
     listAuthors,
     getAuthor,
     updateAuthor: [upload.single('img'), updateAuthor],
-    deleteAuthor
+    deleteAuthor,
+    getBooksByAuthor // Export hàm mới để lấy danh sách sách của tác giả
 };
 
 module.exports = authorController;

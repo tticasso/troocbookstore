@@ -16,7 +16,7 @@ const CheckoutPage = () => {
 
   // Gọi API để lấy dữ liệu giỏ hàng
   useEffect(() => {
-    
+
     fetch(`http://localhost:9999/api/cart/${userId}`)
       .then((res) => res.json())
       .then((data) => setCartData(data))
@@ -36,12 +36,12 @@ const CheckoutPage = () => {
       const orderData = {
         user_id: userId,
         ...formData,
-        items: cartData.items, // Gửi danh sách sản phẩm trong giỏ hàng
+        items: cartData.items,
         total_price: cartData.total_price,
         payment_method: paymentMethod,
         shipping_method: shippingMethod
       };
-
+  
       const response = await fetch('http://localhost:9999/api/order/create', {
         method: 'POST',
         headers: {
@@ -49,22 +49,20 @@ const CheckoutPage = () => {
         },
         body: JSON.stringify(orderData)
       });
-
+  
       if (!response.ok) {
         throw new Error('Đặt hàng thất bại!');
       }
-      else {
-        window.location.href = '/'
-      }
-
+  
       const result = await response.json();
-      alert('Đặt hàng thành công!');
-      console.log(result);
+      alert(`Đặt hàng thành công! Ngày đặt hàng: ${new Date(result.orderDate).toLocaleString('vi-VN')}`);
+      window.location.href = '/';
     } catch (error) {
       console.error('Error placing order:', error);
       alert('Đặt hàng thất bại, vui lòng thử lại.');
     }
   };
+  
 
   if (!cartData) {
     return <div>Đang tải dữ liệu...</div>;
