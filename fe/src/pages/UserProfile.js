@@ -290,7 +290,7 @@ const UserProfile = () => {
             {orders.length > 0 ? (
               orders.map((order) => (
                 <tr key={order._id}>
-                  <td className="px-4 py-2 max-w-[100px] truncate">{order._id}</td>
+                  <td className="px-4 py-2 max-w-[100px] truncate">{order.order_id}</td>
                   <td className="px-4 py-2">{formatDate(order.createdAt)}</td>
                   <td className="px-4 py-2">{order.total_price} VND</td>
                   <td className="px-4 py-2">{order.status}</td>
@@ -342,7 +342,7 @@ const UserProfile = () => {
               <div className="w-1/2 flex-grow">
                 <h3 className="font-bold">Thông tin đơn hàng</h3>
                 <div className="flex flex-col gap-2">
-                  <p><strong>Mã đơn hàng:</strong> {selectedOrder._id}</p>
+                  <p><strong>Mã đơn hàng:</strong> {selectedOrder.order_id}</p>
                   <p><strong>Ngày đặt:</strong> {formatDate(selectedOrder.createdAt)}</p>
                   <p><strong>Phí vận chuyển:</strong> {selectedOrder.shipping_price.toLocaleString()} VND</p>
                   <p><strong>Trạng thái:</strong> {selectedOrder.status}</p>

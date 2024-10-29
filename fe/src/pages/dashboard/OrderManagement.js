@@ -121,7 +121,7 @@ const OrderManagement = () => {
             <Table
                 dataSource={filteredOrders}
                 columns={[
-                    { title: 'ID', dataIndex: '_id', key: '_id' },
+                    { title: 'ID', dataIndex: 'order_id', key: 'order_id' },
                     {
                         title: 'Trạng thái',
                         dataIndex: 'status',
@@ -157,9 +157,9 @@ const OrderManagement = () => {
                     },
                     {
                         title: 'Ngày đặt hàng',
-                        dataIndex: 'orderDate',
-                        key: 'orderDate',
-                        render: (date) => moment(date).format('DD/MM/YYYY'),
+                        dataIndex: 'createdAt',
+                        key: 'createdAt',
+                        render: (date) => moment(date).format('HH:mm DD-MM-YYYY'),
                     },
                     {
                         title: 'Hành động',
@@ -220,7 +220,7 @@ const OrderManagement = () => {
                             <div className="w-1/2 flex-grow">
                                 <h3 className="font-bold">Thông tin đơn hàng</h3>
                                 <div className="flex flex-col gap-2">
-                                    <p><strong>Mã đơn hàng:</strong> {selectedOrder._id}</p>
+                                    <p><strong>Mã đơn hàng:</strong> {selectedOrder.order_id}</p>
                                     <p><strong>Ngày đặt:</strong> {formatDate(selectedOrder.createdAt)}</p>
                                     <p><strong>Phí vận chuyển:</strong> {selectedOrder.shipping_price.toLocaleString()} VND</p>
                                     <p><strong>Trạng thái:</strong> {selectedOrder.status}</p>
