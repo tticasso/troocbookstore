@@ -1,8 +1,10 @@
-const db = require('../models');
+﻿const db = require('../models');
 const Cart = db.cart;
 const CartItem = db.cartItem;
 const Book = db.book;
 
+// Thêm sản phẩm vào giỏ hàng
+// Thêm sản phẩm vào giỏ hàng
 // Thêm sản phẩm vào giỏ hàng
 async function addToCart(req, res) {
     const { user_id, book_id, quantity } = req.body;
@@ -11,16 +13,20 @@ async function addToCart(req, res) {
         const book = await Book.findById(book_id);
         if (!book) return res.status(404).json({ message: 'Book not found' });
 
+        // Tìm giỏ hàng của người dùng, nếu chưa có thì tạo mới
         let cart = await Cart.findOne({ user_id });
         if (!cart) cart = new Cart({ user_id, items: [] });
 
+        // Kiểm tra xem sản phẩm đã có trong giỏ hàng chưa
         let item = await CartItem.findOne({ _id: { $in: cart.items }, book_id });
 
         if (item) {
-            item.quantity += quantity;
-            item.price = book.price * item.quantity;
+            // Nếu sản phẩm đã có, cộng dồn số lượng thay vì ghi đè
+            item.quantity += quantity;  // Cộng thêm số lượng mới vào số lượng hiện tại
+            item.price = book.price * item.quantity;  // Cập nhật giá dựa trên tổng số lượng
             await item.save();
         } else {
+            // Nếu sản phẩm chưa có trong giỏ hàng, thêm mới
             const newItem = new CartItem({
                 book_id,
                 quantity,
@@ -30,7 +36,12 @@ async function addToCart(req, res) {
             cart.items.push(newItem._id);
         }
 
-        cart.total_price += book.price * quantity;
+        // Cập nhật tổng giá của giỏ hàng
+        cart.total_price = await CartItem.aggregate([
+            { $match: { _id: { $in: cart.items } } },
+            { $group: { _id: null, total: { $sum: '$price' } } }
+        ]).then(result => (result[0] ? result[0].total : 0));
+
         await cart.save();
 
         res.status(200).json({ message: 'Product added to cart', cart });
@@ -56,7 +67,6 @@ async function getCart(req, res) {
         res.status(500).json({ error: 'Internal server error', details: error.message });
     }
 }
-
 // Cập nhật số lượng sản phẩm trong giỏ hàng
 async function updateCart(req, res) {
     const { user_id, book_id, quantity } = req.body;
@@ -68,10 +78,12 @@ async function updateCart(req, res) {
         const item = await CartItem.findOne({ _id: { $in: cart.items }, book_id });
         if (!item) return res.status(404).json({ message: 'Item not found in cart' });
 
+        // Cập nhật số lượng và giá của item
         item.quantity = quantity;
         item.price = item.book.price * quantity;
         await item.save();
 
+        // Tính lại tổng giá giỏ hàng
         cart.total_price = await CartItem.aggregate([
             { $match: { _id: { $in: cart.items } } },
             { $group: { _id: null, total: { $sum: '$price' } } }
@@ -111,7 +123,7 @@ async function removeFromCart(req, res) {
 
         // Lấy giá trị price từ CartItem trong cơ sở dữ liệu
         const dbItem = await CartItem.findById(item_id).populate('book_id');
-        
+
         console.log('Item from database:', dbItem); // Kiểm tra giá trị của item
 
         if (!dbItem || typeof dbItem.price !== 'number') {
@@ -162,6 +174,20 @@ async function clearCart(req, res) {
         res.status(500).json({ error: 'Internal server error', details: error.message });
     }
 }
+async function getCartItemCount(req, res) {
+    const { user_id } = req.params;
+
+    try {
+        const cart = await Cart.findOne({ user_id }).populate('items');
+        if (!cart) return res.status(404).json({ message: 'Cart not found' });
+
+        const totalQuantity = cart.items.reduce((sum, item) => sum + item.quantity, 0);
+
+        res.status(200).json({ totalQuantity });
+    } catch (error) {
+        res.status(500).json({ error: 'Internal server error', details: error.message });
+    }
+}
 
 
 
@@ -174,7 +200,8 @@ const cartController = {
     getCart,
     updateCart,
     removeFromCart,
-    clearCart
+    clearCart,
+    getCartItemCount
 };
 
 module.exports = cartController;

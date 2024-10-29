@@ -1,4 +1,4 @@
-const db = require('../models');
+﻿const db = require('../models');
 const Book = db.book;
 const multer = require('multer');
 const path = require('path');
@@ -39,16 +39,25 @@ async function createBook(req, res) {
         res.status(500).json({ message: 'Error creating book', error });
     }
 }
-
-// List all books
 async function listBooks(req, res) {
+    const { search } = req.query;
+    const searchQuery = search
+        ? {
+            $or: [
+                { title: { $regex: search, $options: 'i' } },
+                { 'author.full_name': { $regex: search, $options: 'i' } }
+            ]
+        }
+        : {};
+
     try {
-        const books = await Book.find() // Populating related fields
+        const books = await Book.find(searchQuery).populate('author');
         res.status(200).json(books);
     } catch (error) {
         res.status(500).json({ message: 'Error fetching books', error });
     }
 }
+
 
 // Get a single book by ID
 async function getBook(req, res) {

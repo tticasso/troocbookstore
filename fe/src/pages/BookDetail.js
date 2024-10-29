@@ -11,9 +11,7 @@ const BookDetails = () => {
   const [quantity, setQuantity] = useState(1);
   const [authorName, setAuthorName] = useState('');
   const user_id = localStorage.getItem('userId');
-  // Hàm tăng/giảm số lượng
   const incrementQuantity = () => {
-    // Kiểm tra nếu số lượng hiện tại ít hơn số sách trong kho
     if (quantity < book.quantity) {
       setQuantity((prev) => prev + 1);
     }
@@ -21,7 +19,6 @@ const BookDetails = () => {
 
   const decrementQuantity = () => setQuantity((prev) => Math.max(1, prev - 1));
 
-  // Gọi API để lấy thông tin sách và danh sách tác giả
   useEffect(() => {
     const fetchBookDetails = async () => {
       try {
@@ -45,7 +42,6 @@ const BookDetails = () => {
     fetchAuthors();
   }, [bookId]);
 
-  // Tìm tên tác giả tương ứng với _id
   useEffect(() => {
     if (book && authors.length > 0) {
       const author = authors.find((author) => author._id === book.author);
@@ -56,14 +52,14 @@ const BookDetails = () => {
   }, [book, authors]);
 
   if (!book) {
-    return <div>Loading...</div>; // Hiển thị khi dữ liệu chưa được tải
+    return <div>Loading...</div>;
   }
 
   const handleAddToCart = async () => {
     const body = {
-      user_id: user_id, // Thay thế bằng user_id thực tế nếu có
+      user_id: user_id,
       book_id: book._id,
-      quantity: 1,
+      quantity: quantity,
     };
 
     try {
@@ -75,6 +71,7 @@ const BookDetails = () => {
       alert('Failed to add book to cart.');
     }
   };
+
 
   return (
     <div className="w-5/6 mx-auto p-4 flex flex-col justify-center items-center">
@@ -140,7 +137,7 @@ const BookDetails = () => {
               <span>{book.pages || 'N/A'}</span>
             </li>
             <li className="flex justify-between font-mono">
-              <span className="text-gray-600">Release date</span>
+              <span className="text-gray-600">Release Year</span>
               <span>{new Date(book.publication_date).getFullYear()}</span>
             </li>
           </ul>

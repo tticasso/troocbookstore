@@ -71,8 +71,7 @@ async function getUserOrders(req, res) {
     const { user_id } = req.params;
 
     try {
-        const orders = await Order.find({ user_id });
-
+        const orders = await Order.find({ user_id }, 'orderCode total_price status createdAt');
         res.status(200).json(orders);
     } catch (error) {
         res.status(500).json({ error: 'Internal server error', details: error.message });
@@ -156,20 +155,22 @@ async function cancelOrder(req, res) {
     const { id } = req.params;
 
     try {
-        const order = await Order.findByIdAndUpdate(
-            id,
+        const order = await Order.findOneAndUpdate(
+            { _id: id, status: { $in: ['pending', 'confirmed'] } }, 
             { status: 'cancel' },
             { new: true }
         );
-        if (!order) return res.status(404).json({ message: 'Order not found' });
 
-        res.status(200).json(order);
+        if (!order) {
+            return res.status(404).json({ message: 'Order not found or cannot be canceled.' });
+        }
+
+        res.status(200).json({ message: 'Order canceled successfully.', order });
     } catch (error) {
-        res.status(500).json({ error: 'Internal server error', details: error.message });
+        res.status(500).json({ message: 'Internal server error while canceling order.', details: error.message });
     }
 }
 
-// Định nghĩa controller cho order
 const orderController = {
     createOrder,
     getUserOrders,

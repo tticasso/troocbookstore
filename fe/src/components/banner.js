@@ -1,5 +1,14 @@
 import React, { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom'; // Import useNavigate
+import { useNavigate } from 'react-router-dom';
+
+const normalizeText = (str) => {
+    return str
+        .toLowerCase()
+        .normalize("NFD")
+        .replace(/[\u0300-\u036f]/g, "")
+        .replace(/\s+/g, "")
+        .trim();
+};
 
 const BookCover = ({ src, alt, style }) => (
     <img src={src} alt={alt} className="absolute rounded-lg shadow-lg" style={style} />
@@ -7,39 +16,53 @@ const BookCover = ({ src, alt, style }) => (
 
 const Banner = () => {
     const [books, setBooks] = useState([]);
-    const [randomBooks, setRandomBooks] = useState([]);
-    const [searchTerm, setSearchTerm] = useState(''); // Lưu trữ từ khóa tìm kiếm
-    const navigate = useNavigate(); // Hook để điều hướng
+    const [authors, setAuthors] = useState([]);
+    const [randomBooks, setRandomBooks] = useState([]); // Thêm khai báo randomBooks
+    const [searchTerm, setSearchTerm] = useState('');
+    const navigate = useNavigate();
 
     useEffect(() => {
-        const fetchBooks = async () => {
+        const fetchBooksAndAuthors = async () => {
             try {
-                const response = await fetch('http://localhost:9999/api/book/list');
-                const data = await response.json();
-                setBooks(data);
+                const booksResponse = await fetch('http://localhost:9999/api/book/list');
+                const authorsResponse = await fetch('http://localhost:9999/api/author/list');
+                const booksData = await booksResponse.json();
+                const authorsData = await authorsResponse.json();
 
-                // Chọn ngẫu nhiên 3 quyển sách
+                setBooks(booksData);
+                setAuthors(authorsData);
+
+                // Chọn ngẫu nhiên 3 sách từ danh sách books
                 const selectedBooks = [];
-                while (selectedBooks.length < 3) {
-                    const randomIndex = Math.floor(Math.random() * data.length);
-                    const book = data[randomIndex];
-                    if (!selectedBooks.includes(book)) {
-                        selectedBooks.push(book);
+                while (selectedBooks.length < 3 && booksData.length > 0) {
+                    const randomIndex = Math.floor(Math.random() * booksData.length);
+                    const randomBook = booksData[randomIndex];
+                    if (!selectedBooks.includes(randomBook)) {
+                        selectedBooks.push(randomBook);
                     }
                 }
                 setRandomBooks(selectedBooks);
             } catch (error) {
-                console.error('Error fetching books:', error);
+                console.error('Error fetching books and authors:', error);
             }
         };
 
-        fetchBooks();
+        fetchBooksAndAuthors();
     }, []);
 
-    // Hàm xử lý tìm kiếm
     const handleSearch = () => {
-        // Điều hướng đến /book_list với từ khóa tìm kiếm
-        navigate(`/book_list?search=${searchTerm}`);
+        const normalizedSearchTerm = normalizeText(searchTerm);
+
+        // Kiểm tra xem từ khóa có khớp với tên tác giả nào không
+        const matchingAuthor = authors.find(author =>
+            normalizeText(author.full_name).includes(normalizedSearchTerm)
+        );
+
+        if (matchingAuthor) {
+            navigate(`/author_list?search=${normalizedSearchTerm}`);
+        } else {
+            navigate(`/book_list?search=${normalizedSearchTerm}`);
+        }
     };
 
     return (
@@ -51,32 +74,28 @@ const Banner = () => {
                         favorite book<br />
                         for the best price
                     </h1>
-                    <div className="flex w-[530px] h-[75px] bg-white">
-                        <div className='w-[256px] h-[26px] pl-4 pt-4 pb-4'>
-                            <input
-                                type="text"
-                                placeholder="Search for your book"
-                                className="w-[300px] flex-grow px-4 py-2 focus:outline-none"
-                                value={searchTerm}
-                                onChange={(e) => setSearchTerm(e.target.value)} // Cập nhật từ khóa tìm kiếm
-                            />
-                        </div>
-                        <div className='w-[152px] h-[45px] pt-4 pb-4 pl-4 ml-20'>
-                            <button
-                                className="w-[152px] h-[45px] bg-[#01A268] text-white px-6 py-2 hover:bg-green-600 transition duration-300"
-                                onClick={handleSearch} // Gọi hàm tìm kiếm khi nhấn nút
-                            >
-                                Search
-                            </button>
-                        </div>
+                    <div className="flex w-[530px] h-[75px] bg-white rounded-lg shadow-lg overflow-hidden">
+                        <input
+                            type="text"
+                            placeholder="Search for your book or author"
+                            className="flex-grow px-4 py-2 focus:outline-none text-lg"
+                            value={searchTerm}
+                            onChange={(e) => setSearchTerm(e.target.value)}
+                        />
+                        <button
+                            className="w-[152px] bg-[#01A268] text-white font-semibold hover:bg-green-600 transition duration-300"
+                            onClick={handleSearch}
+                        >
+                            Search
+                        </button>
                     </div>
                 </div>
                 <div className="flex-1 relative h-80 mb-10">
                     {randomBooks.map((book, index) => (
                         <BookCover
                             key={book._id}
-                            src={`http://localhost:9999/${book.img}`} 
-                            alt={book.title || `Book ${index + 1}`} 
+                            src={`http://localhost:9999/${book.img}`}
+                            alt={book.title || `Book ${index + 1}`}
                             style={{
                                 right: `${(3 - index) * 70}px`,
                                 top: `${index * 20}px`,
