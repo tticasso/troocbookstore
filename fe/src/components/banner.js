@@ -6,7 +6,6 @@ const normalizeText = (str) => {
         .toLowerCase()
         .normalize("NFD")
         .replace(/[\u0300-\u036f]/g, "")
-        .replace(/\s+/g, "")
         .trim();
 };
 
@@ -17,7 +16,7 @@ const BookCover = ({ src, alt, style }) => (
 const Banner = () => {
     const [books, setBooks] = useState([]);
     const [authors, setAuthors] = useState([]);
-    const [randomBooks, setRandomBooks] = useState([]); // Thêm khai báo randomBooks
+    const [randomBooks, setRandomBooks] = useState([]);
     const [searchTerm, setSearchTerm] = useState('');
     const navigate = useNavigate();
 
@@ -32,7 +31,6 @@ const Banner = () => {
                 setBooks(booksData);
                 setAuthors(authorsData);
 
-                // Chọn ngẫu nhiên 3 sách từ danh sách books
                 const selectedBooks = [];
                 while (selectedBooks.length < 3 && booksData.length > 0) {
                     const randomIndex = Math.floor(Math.random() * booksData.length);
@@ -53,15 +51,27 @@ const Banner = () => {
     const handleSearch = () => {
         const normalizedSearchTerm = normalizeText(searchTerm);
 
-        // Kiểm tra xem từ khóa có khớp với tên tác giả nào không
-        const matchingAuthor = authors.find(author =>
+        // Kiểm tra trong danh sách sách trước
+        const matchingBook = books.some(book => 
+            normalizeText(book.title).includes(normalizedSearchTerm)
+        );
+
+        // Kiểm tra trong danh sách tác giả
+        const matchingAuthor = authors.some(author =>
             normalizeText(author.full_name).includes(normalizedSearchTerm)
         );
 
-        if (matchingAuthor) {
-            navigate(`/author_list?search=${normalizedSearchTerm}`);
-        } else {
-            navigate(`/book_list?search=${normalizedSearchTerm}`);
+        // Nếu tìm thấy sách hoặc tìm thấy cả sách và tác giả, ưu tiên chuyển đến trang sách
+        if (matchingBook) {
+            navigate(`/book_list?search=${encodeURIComponent(searchTerm)}`);
+        }
+        // Nếu chỉ tìm thấy tác giả, chuyển đến trang tác giả
+        else if (matchingAuthor) {
+            navigate(`/author_list?search=${encodeURIComponent(searchTerm)}`);
+        }
+        // Nếu không tìm thấy gì, mặc định chuyển đến trang sách
+        else {
+            navigate(`/book_list?search=${encodeURIComponent(searchTerm)}`);
         }
     };
 
@@ -81,6 +91,11 @@ const Banner = () => {
                             className="flex-grow px-4 py-2 focus:outline-none text-lg"
                             value={searchTerm}
                             onChange={(e) => setSearchTerm(e.target.value)}
+                            onKeyPress={(e) => {
+                                if (e.key === 'Enter') {
+                                    handleSearch();
+                                }
+                            }}
                         />
                         <button
                             className="w-[152px] bg-[#01A268] text-white font-semibold hover:bg-green-600 transition duration-300"
