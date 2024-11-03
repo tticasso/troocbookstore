@@ -33,7 +33,7 @@ const Login = () => {
             if (error.response && error.response.data.message === 'Invalid credentials') {
                 setErrorMessage('Sai email hoặc mật khẩu');
             } else {
-                setErrorMessage('Có lỗi xảy ra. Vui lòng thử lại.');
+                setErrorMessage('Email hoặc mật khẩu chưa chính xác. Vui lòng thử lại.');
             }
         }
     };

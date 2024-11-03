@@ -1,19 +1,50 @@
 import React, { useState } from 'react';
 import { UilEnvelopeAlt, UilLock, UilUser, UilPhone } from '@iconscout/react-unicons';
 import Login_Image from '../assets/login_Image.png';
-import axios from 'axios'; // Nhập Axios
+import axios from 'axios';
 
 const SignUp = () => {
-    // Khai báo state cho form
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [fullname, setFullname] = useState('');
     const [phone, setPhone] = useState('');
     const [message, setMessage] = useState('');
 
-    // Xử lý gửi form
+    const validateInput = () => {
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        const passwordRegex = /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{6,15}$/;
+        const phoneRegex = /^0\d{9}$/;
+
+        if (!emailRegex.test(email)) {
+            setMessage('Email không hợp lệ.');
+            return false;
+        }
+
+        if (!passwordRegex.test(password)) {
+            setMessage('Mật khẩu phải chứa ít nhất 6 ký tự, bao gồm ít nhất một chữ cái và một số, không có khoảng trắng và tối đa 15 ký tự.');
+            return false;
+        }
+
+        const formattedFullname = fullname.trim().replace(/\s+/g, ' ');
+        if (formattedFullname.length > 15) {
+            setMessage('Họ và tên tối đa 15 ký tự.');
+            return false;
+        }
+        setFullname(formattedFullname);
+
+        if (!phoneRegex.test(phone)) {
+            setMessage('Số điện thoại phải bắt đầu bằng số 0 và gồm đúng 10 chữ số.');
+            return false;
+        }
+
+        setMessage('');
+        return true;
+    };
+
     const handleSubmit = async (e) => {
         e.preventDefault();
+
+        if (!validateInput()) return;
 
         const userData = {
             email,
@@ -30,13 +61,12 @@ const SignUp = () => {
             });
 
             if (response.status === 201) {
-                window.alert('Sign up successful!'); // Hiển thị thông báo thành công
-                window.location.href = '/login'; // Chuyển hướng đến trang đăng nhập
+                window.alert('Sign up successful!');
+                window.location.href = '/login';
             }
         } catch (error) {
-            // Kiểm tra nếu có thông báo lỗi từ server
             const errorMessage = error.response?.data?.message || 'Sign up failed. Please try again.';
-            setMessage(errorMessage); // Hiển thị thông báo thất bại từ API
+            setMessage(errorMessage);
         }
     };
 
@@ -54,6 +84,7 @@ const SignUp = () => {
                     <h2 className="text-3xl font-bold text-[#01A268] text-center">TroocBookstore</h2>
                     <h2 className="text-3xl font-bold text-[#01A268] mb-6 text-center">Sign Up</h2>
                     <form className="space-y-4" onSubmit={handleSubmit}>
+                        {/* Email Field */}
                         <div>
                             <label htmlFor="email" className="block text-sm font-medium text-[#01A268]">Email</label>
                             <div className="mt-1 relative rounded-[20px] border-2 border-[#01A268]">
@@ -71,6 +102,8 @@ const SignUp = () => {
                                 />
                             </div>
                         </div>
+                        
+                        {/* Password Field */}
                         <div>
                             <label htmlFor="password" className="block text-sm font-medium text-[#01A268]">Password</label>
                             <div className="mt-1 relative rounded-[20px] border-2 border-[#01A268]">
@@ -88,6 +121,8 @@ const SignUp = () => {
                                 />
                             </div>
                         </div>
+
+                        {/* Full Name Field */}
                         <div>
                             <label htmlFor="fullname" className="block text-sm font-medium text-[#01A268]">Full name</label>
                             <div className="mt-1 relative rounded-[20px] border-2 border-[#01A268]">
@@ -105,6 +140,8 @@ const SignUp = () => {
                                 />
                             </div>
                         </div>
+
+                        {/* Phone Field */}
                         <div>
                             <label htmlFor="phone" className="block text-sm font-medium text-[#01A268]">Phone</label>
                             <div className="mt-1 relative rounded-[20px] border-2 border-[#01A268]">
@@ -122,6 +159,7 @@ const SignUp = () => {
                                 />
                             </div>
                         </div>
+
                         <div className="flex justify-center items-center">
                             <button
                                 type="submit"

@@ -94,7 +94,15 @@ const UserProfile = () => {
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setEditedUser(prev => ({ ...prev, [name]: value }));
+    let processedValue = value;
+    
+    if (name === 'phone') {
+      // Chỉ xử lý số điện thoại để bỏ dấu cách
+      processedValue = String(value).replace(/\s/g, '');
+    }
+    // Không xử lý dấu cách cho fullName tại đây nữa
+    
+    setEditedUser(prev => ({ ...prev, [name]: processedValue }));
   };
 
   // Đặt hàm validateInputs lên trên cùng
@@ -106,18 +114,29 @@ const UserProfile = () => {
       return false;
     }
 
-    const passwordRegex = /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{6,}$/; // Ít nhất 6 ký tự và ít nhất 1 chữ cái
-    if (!passwordRegex.test(password)) {
-      alert("Mật khẩu phải có ít nhất 6 ký tự và ít nhất 1 chữ cái (không có ký tự đặc biệt).");
+    // Xử lý và kiểm tra fullName
+    const trimmedName = fullName.replace(/\s+/g, ' ').trim();
+    if (trimmedName.length < 7) {
+      alert("Họ tên phải có ít nhất 7 ký tự.");
       return false;
     }
 
-    if (password !== confirmPassword) {
-      alert("Mật khẩu và xác nhận mật khẩu không khớp.");
-      return false;
+    // Only validate password if user entered a new one
+    if (password) {
+      const passwordRegex = /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{6,}$/;
+      if (!passwordRegex.test(password)) {
+        alert("Mật khẩu phải có ít nhất 6 ký tự và ít nhất 1 chữ cái (không có ký tự đặc biệt).");
+        return false;
+      }
+
+      if (password !== confirmPassword) {
+        alert("Mật khẩu và xác nhận mật khẩu không khớp.");
+        return false;
+      }
     }
 
-    if (phone.length !== 10) {
+    const cleanPhone = String(phone).replace(/\s/g, '');
+    if (cleanPhone.length !== 10) {
       alert("Số điện thoại phải đủ 10 chữ số.");
       return false;
     }
@@ -127,28 +146,45 @@ const UserProfile = () => {
 
   // Hàm handleSave sẽ được sử dụng bên dưới hàm validateInputs
   const handleSave = async () => {
-    if (!validateInputs()) return; // Kiểm tra đầu vào
+    if (!validateInputs()) return;
 
-    const response = await fetch(`http://localhost:9999/api/user/update/${userId}`, {
-      method: 'PUT',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        full_name: editedUser.fullName,
-        email: user.email, // Không cho phép chỉnh sửa email
-        password: editedUser.password,
-        phone_number: editedUser.phone,
-      }),
-    });
+    // Process the phone number: remove spaces and add leading 0
+    const processedPhone = String(editedUser.phone).replace(/\s/g, '');
+    const phoneWithLeadingZero = processedPhone.startsWith('0') ? processedPhone : '0' + processedPhone;
 
-    if (response.ok) {
-      alert("Cập nhật thông tin thành công!"); // Thông báo thành công
-      window.location.reload(); // Tải lại trang để cập nhật thông tin mới
-    } else {
-      alert("Cập nhật thất bại!"); // Thông báo lỗi
+    // Create the update payload
+    const updatePayload = {
+      full_name: editedUser.fullName.replace(/\s+/g, ' ').trim(),
+      email: user.email,
+      phone_number: phoneWithLeadingZero,
+    };
+
+    // Only include password in payload if a new one was entered
+    if (editedUser.password) {
+      updatePayload.password = editedUser.password;
+    }
+
+    try {
+      const response = await fetch(`http://localhost:9999/api/user/update/${userId}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(updatePayload),
+      });
+
+      if (response.ok) {
+        alert("Cập nhật thông tin thành công!");
+        window.location.reload();
+      } else {
+        alert("Cập nhật thất bại!");
+      }
+    } catch (error) {
+      console.error("Error updating user:", error);
+      alert("Có lỗi xảy ra khi cập nhật thông tin!");
     }
   };
+
   const handleClosePopup = () => {
     setShowOrderDetails(false);
     setSelectedOrder(null);
@@ -371,9 +407,9 @@ const UserProfile = () => {
                     </div>
                     <div className="ml-4 flex-grow">
                       <h3 className="font-semibold">{item.book_id.title}</h3>
-                      <p>{item.quantity} x {item.price.toLocaleString()} VND</p>
+                      <p>{item.quantity} x {item.price/item.quantity.toLocaleString()} VND</p>
                     </div>
-                    <span className="font-semibold">{(item.quantity * item.price).toLocaleString()} VND</span>
+                    <span className="font-semibold">{(item.price).toLocaleString()} VND</span>
 
                   </div>
 
