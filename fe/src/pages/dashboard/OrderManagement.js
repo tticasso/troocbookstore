@@ -95,7 +95,7 @@ const OrderManagement = () => {
     };
     const formatDate = (dateString) => {
         const date = new Date(dateString);
-        return date.toLocaleDateString('vi-VN');
+        return moment(date).format('HH:mm DD-MM-YYYY');
     };
 
 
