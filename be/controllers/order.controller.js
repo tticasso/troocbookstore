@@ -71,7 +71,7 @@ async function getUserOrders(req, res) {
     const { user_id } = req.params;
 
     try {
-        const orders = await Order.find({ user_id }, 'orderCode total_price status createdAt');
+        const orders = await Order.find({ user_id }, 'orderCode order_id total_price status createdAt');
         res.status(200).json(orders);
     } catch (error) {
         res.status(500).json({ error: 'Internal server error', details: error.message });

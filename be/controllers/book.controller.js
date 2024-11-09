@@ -90,13 +90,19 @@ async function updateBook(req, res) {
         if (isbn) book.isbn = isbn;
         if (status) book.status = status;
         if (nation) book.nation = nation;
-        if (req.file) book.img = req.file.path;
+        if (req.file) { 
+            book.img = req.file.path; 
+          }
 
         await book.save();
         res.status(200).json({ message: 'Book updated successfully', book });
     } catch (error) {
-        res.status(500).json({ message: 'Error updating book', error });
-    }
+        console.error('Error updating book:', error); // Log lỗi chi tiết
+        res.status(500).json({ 
+          message: 'Error updating book', 
+          details: error.message // Trả về thông tin lỗi cụ thể hơn 
+        });
+      }
 }
 
 // Delete a book by ID

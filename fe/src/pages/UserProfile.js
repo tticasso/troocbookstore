@@ -42,6 +42,8 @@ const UserProfile = () => {
         const response = await fetch(`http://localhost:9999/api/order/${userId}`);
         const data = await response.json();
         setOrders(data);
+        console.log('orders :', data);
+        
       } catch (error) {
         console.error("Lỗi khi tải đơn hàng:", error);
       }
@@ -55,6 +57,7 @@ const UserProfile = () => {
       const data = await response.json();
       setSelectedOrder(data);
       setShowOrderDetails(true);
+      
     } catch (error) {
       console.error("Lỗi khi tải chi tiết đơn hàng:", error);
     }
@@ -327,7 +330,7 @@ const UserProfile = () => {
             {orders.length > 0 ? (
               orders.map((order) => (
                 <tr key={order._id}>
-                  <td className="px-4 py-2 max-w-[100px] truncate">{order.order_id}</td>
+                  <td className="px-4 py-2 max-w-[100px] truncate">{order.order_id} </td>
                   <td className="px-4 py-2">{formatDate(order.createdAt)}</td>
                   <td className="px-4 py-2">{order.total_price} VND</td>
                   <td className="px-4 py-2">{order.status}</td>

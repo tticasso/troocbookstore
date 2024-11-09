@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useParams } from 'react-router-dom';
+import { useParams, useNavigate  } from 'react-router-dom';
 import axios from 'axios';
 import authorImagePlaceholder from '../assets/author.png';
 
@@ -9,6 +9,11 @@ const AuthorDetail = () => {
     const [books, setBooks] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
+    const navigate = useNavigate();
+
+    const handleNavigateToDetail = (_id) => {
+        navigate(`/book_detail/${_id}`);
+    };
 
     useEffect(() => {
         const fetchAuthor = async () => {
@@ -76,16 +81,17 @@ const AuthorDetail = () => {
                     {books.length > 0 ? (
                         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
                         {books.map(book => (
-                            <div key={book._id} className="bg-white p-4 shadow rounded-lg text-center">
+                            <div key={book._id} className="bg-white p-4 shadow rounded-lg text-center max-h-[800px] ">
                                 <div className="w-full h-48 flex items-center justify-center overflow-hidden mb-4">
                                     <img
                                         src={`http://localhost:9999/${book.img}`}
                                         alt={book.title}
-                                        className="w-full h-full object-contain" // Thay đổi từ object-cover sang object-contain
+                                        className="w-full h-full object-contain cursor-pointer"
+                                        onClick={() => handleNavigateToDetail(book._id)}
                                     />
                                 </div>
                                 <h4 className="text-lg font-semibold">{book.title}</h4>
-                                <p className="text-gray-500 text-sm mb-2">{book.description}</p>
+                                <p className="text-gray-500 text-sm mb-2 truncate max-h-[500px]">{book.description}</p>
                                 
                             </div>
                         ))}
