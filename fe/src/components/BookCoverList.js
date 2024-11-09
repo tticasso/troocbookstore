@@ -64,7 +64,7 @@ const BookCover = ({ book }) => {
 
       <div className="text-center" onClick={handleNavigateToDetail}>
         <p className="text-[20px] font-mono truncate px-2 cursor-pointer">{title}</p>
-        <p className="text-[20px] font-mono text-[#01A268] mt-1 cursor-pointer">${price}</p>
+        <p className="text-[20px] font-mono text-[#01A268] mt-1 cursor-pointer">{price} ₫</p>
       </div>
     </div>
   );

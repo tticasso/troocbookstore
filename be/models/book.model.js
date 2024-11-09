@@ -7,7 +7,7 @@ const bookSchema = new Schema({
         required: [true, 'Title is required']
     },
     publication_date: {
-        type: Date,
+        type: String,
         required: [true, 'Publication date is required']
     },
     img: {
@@ -40,7 +40,6 @@ const bookSchema = new Schema({
     ],
     isbn: {
         type: String,
-        required: [true, 'ISBN is required']
     },
     status: {
         type: String,
@@ -51,11 +50,7 @@ const bookSchema = new Schema({
         type: Schema.Types.ObjectId,
         ref: 'nation',
         required: [true, 'Nation is required']
-    },
-    img: {
-        type: String,
-        required: [true, 'Image is required']
-    },
+    }
 },
     {
         timestamps: true

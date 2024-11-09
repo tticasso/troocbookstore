@@ -13,7 +13,7 @@ const AuthorCard = ({ name, image, authorId }) => {
   return (
     <div className="w-[221px] h-[270px] flex flex-col items-center cursor-pointer" onClick={handleAuthorClick}>
       <img src={image} alt={name} className="w-[190px] h-[198px] rounded-full object-cover" />
-      <p className="text-[24px] leading-[31px] mt-1 font-mono">{name}</p>
+      <p className="text-[24px] leading-[31px] mt-1 font-mono truncate max-w-[250px]">{name}</p>
     </div>
   );
 };

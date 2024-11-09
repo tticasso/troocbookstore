@@ -25,7 +25,7 @@ const AuthorAvatar = ({ name, image, authorId }) => { // Thêm authorId vào pro
         className="w-[221px] h-[221px] rounded-full object-cover cursor-pointer" // Thêm cursor-pointer
         onClick={handleAuthorClick} // Thêm sự kiện click để chuyển trang
       />
-      <p className="text-[24px] leading-[31px] mt-1 font-mono">{name}</p>
+      <p className="text-[24px] leading-[31px] mt-1 font-mono truncate max-w-[200px]">{name}</p>
     </div>
   );
 };

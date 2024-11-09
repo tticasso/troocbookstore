@@ -100,7 +100,7 @@ const OrderManagement = () => {
 
 
     const filteredOrders = orders.filter((order) =>
-        order._id.toLowerCase().includes(searchTerm.toLowerCase())
+        order.order_id?.toLowerCase().includes(searchTerm.toLowerCase()) 
     );
 
     return (
@@ -116,7 +116,7 @@ const OrderManagement = () => {
                 <Button type="primary" onClick={() => setIsModalVisible(true)}>
                     <PlusOutlined /> Thêm đơn hàng
                 </Button>
-            </Space>
+            </Space> 
 
             <Table
                 dataSource={filteredOrders}

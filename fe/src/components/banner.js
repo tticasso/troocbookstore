@@ -1,12 +1,13 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
-const normalizeText = (str) => {
+export const normalizeText = (str) => {
     return str
         .toLowerCase()
         .normalize("NFD")
         .replace(/[\u0300-\u036f]/g, "")
-        .trim();
+        .replace(/^\s+|\s+$/g, '') // Loại bỏ khoảng trắng ở đầu và cuối chuỗi
+        .replace(/\s+/g, ' '); // Thay thế nhiều khoảng trắng bằng một khoảng trắng
 };
 
 const BookCover = ({ src, alt, style }) => (
@@ -48,11 +49,15 @@ const Banner = () => {
         fetchBooksAndAuthors();
     }, []);
 
+
     const handleSearch = () => {
+        // Chuẩn hóa chuỗi tìm kiếm
         const normalizedSearchTerm = normalizeText(searchTerm);
 
+        console.log('normalizedSearchTerm: ', normalizedSearchTerm);
+
         // Kiểm tra trong danh sách sách trước
-        const matchingBook = books.some(book => 
+        const matchingBook = books.some(book =>
             normalizeText(book.title).includes(normalizedSearchTerm)
         );
 
@@ -60,6 +65,7 @@ const Banner = () => {
         const matchingAuthor = authors.some(author =>
             normalizeText(author.full_name).includes(normalizedSearchTerm)
         );
+
 
         // Nếu tìm thấy sách hoặc tìm thấy cả sách và tác giả, ưu tiên chuyển đến trang sách
         if (matchingBook) {

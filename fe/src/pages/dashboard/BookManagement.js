@@ -63,7 +63,10 @@ const BookManagement = () => {
 
     // Hàm lấy tên tác giả từ danh sách tác giả dựa trên authorId
     const getAuthorName = (authorId) => {
-        const author = authors.find((a) => a._id === authorId);
+        if (!authorId) { 
+            return 'Không rõ';
+        }
+        const author = authors.find((a) => a._id === authorId._id);
         return author ? author.full_name : 'Không rõ';
     };
 
@@ -80,7 +83,7 @@ const BookManagement = () => {
     // Hàm lấy tên quốc gia từ danh sách nations dựa trên nationId
     const getNationName = (nationId) => {
         const nation = nations.find((n) => n._id === nationId);
-        return nation ? nation.name : 'Không rõ';
+        return nation ? nation.name : 'Không rõ'; 
     };
 
     const handleFormSubmit = async (values) => {
@@ -89,6 +92,10 @@ const BookManagement = () => {
         if (values.img && values.img[0]) {
             formData.append('img', values.img[0].originFileObj); // Đính kèm file ảnh
         }
+
+        // Chuyển đổi năm xuất bản thành định dạng date
+        const publicationDate = moment(`${values.publication_date}-01-01`).format('YYYY-MM-DD');
+        values.publication_date = publicationDate;
 
         Object.keys(values).forEach(key => {
             if (key !== 'img') {
@@ -136,14 +143,14 @@ const BookManagement = () => {
         setEditingBook(book);
         form.setFieldsValue({
             ...book,
-            publication_date: moment(book.publication_date),
+            publication_date: moment(book.publication_date).format('YYYY'),
             category: book.category
         });
         setIsModalVisible(true);
-        setFileList([]);
+        setFileList([]); 
     };
 
-    const filteredBooks = books.filter(book => 
+    const filteredBooks = books.filter(book =>
         book.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
         getAuthorName(book.author).toLowerCase().includes(searchTerm.toLowerCase()) ||
         getCategoryNames(book.category).toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -188,21 +195,21 @@ const BookManagement = () => {
                     // Các cột khác...
                     { title: 'Tiêu đề', dataIndex: 'title', key: 'title' },
                     { title: 'Tác giả', dataIndex: 'author', key: 'author', render: (authorId) => getAuthorName(authorId) },
-                    { title: 'Ảnh', dataIndex: 'img', key: 'img' },
+                    { title: 'Ảnh', dataIndex: 'img', key: 'img', render: (img) => <img src={`http://localhost:9999/uploads/${img.split('\\').pop()}`} alt="book"  /> },
                     { title: 'Thể loại', dataIndex: 'category', key: 'category', render: (categoriesIds) => getCategoryNames(categoriesIds) },
-                    { title: 'Mô tả', dataIndex: 'description', key: 'description' },
-                    { title: 'Quốc gia', dataIndex: 'nation', key: 'nation', render: (nationId) => getNationName(nationId) },
-                    { title: 'Giá', dataIndex: 'price', key: 'price' },
-                    { title: 'Số lượng', dataIndex: 'quantity', key: 'quantity', },
-                    { title: 'Ngày xuất bản', dataIndex: 'publication_date', key: 'publication_date', render: date => moment(date).format('DD/MM/YYYY') },
+                    { title: 'Mô tả', dataIndex: 'description', key: 'description',className: "truncate max-w-[300px]" },
+                    { title: 'Quốc gia', dataIndex: 'nation', key: 'nation', render: (nationId) => getNationName(nationId), className: 'text-center' },
+                    { title: 'Giá', dataIndex: 'price', key: 'price', className: 'text-center' },
+                    { title: 'Số lượng', dataIndex: 'quantity', key: 'quantity', className: 'text-center' },
+                    { title: 'Năm xuất bản', dataIndex: 'publication_date', key: 'publication_date', render: date => moment(date).format('YYYY'), className: 'text-center' },
                     {
                         title: 'Hành động',
                         key: 'action',
                         render: (_, record) => (
                             <Space size="middle">
-                                <Button 
-                                    type="text" 
-                                    icon={<EditOutlined />} 
+                                <Button
+                                    type="text"
+                                    icon={<EditOutlined />}
                                     onClick={() => handleEdit(record)}
                                 />
                                 <Popconfirm
@@ -211,8 +218,8 @@ const BookManagement = () => {
                                     okText="Có"
                                     cancelText="Không"
                                 >
-                                    <Button 
-                                        type="text" 
+                                    <Button
+                                        type="text"
                                         icon={<DeleteOutlined />}
                                     />
                                 </Popconfirm>
@@ -249,11 +256,26 @@ const BookManagement = () => {
                     </Form.Item>
 
                     <Form.Item
-                        label="Ngày xuất bản"
+                        label="Năm xuất bản"
                         name="publication_date"
-                        rules={[{ required: true, message: 'Vui lòng chọn ngày xuất bản!' }]}
+                        rules={[
+                            { required: true, message: 'Vui lòng nhập năm xuất bản!' },
+                            {
+                                pattern: /^\d{4}$/,
+                                message: 'Năm xuất bản phải là 4 chữ số!'
+                            },
+                            {
+                                validator: (_, value) => {
+                                    const year = parseInt(value);
+                                    if (year >= 1000 && year <= 3000) {
+                                        return Promise.resolve();
+                                    }
+                                    return Promise.reject('Năm xuất bản phải từ 1000 đến 3000!');
+                                }
+                            }
+                        ]}
                     >
-                        <DatePicker style={{ width: '100%' }} />
+                        <Input maxLength={4} />
                     </Form.Item>
 
                     <Form.Item
@@ -311,7 +333,7 @@ const BookManagement = () => {
                     <Form.Item
                         label="ISBN"
                         name="isbn"
-                        rules={[{ required: true, message: 'Vui lòng nhập mã ISBN!' }]}
+                        rules={[{ required: false, message: 'Vui lòng nhập mã ISBN!' }]}
                     >
                         <Input />
                     </Form.Item>

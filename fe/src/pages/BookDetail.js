@@ -86,7 +86,7 @@ const BookDetails = () => {
         <div className="w-full md:w-1/2 mr-20">
           <h1 className="text-3xl font-bold mb-2 font-mono">Tên sách: {book.title}</h1>
           <p className="text-gray-600 mb-4 font-mono">Author: {authorName || 'N/A'}</p>
-          <p className="text-2xl font-bold text-green-600 font-mono">{book.price}$</p>
+          <p className="text-2xl font-bold text-green-600 font-mono">{book.price} ₫</p>
 
           <hr className="my-8 border-t border-black" />
 

@@ -19,6 +19,7 @@ import {
     Col,
     Upload
 } from 'antd';
+import moment from 'moment';
 
 import {
     PlusOutlined,
@@ -48,7 +49,12 @@ const AuthorManagement = () => {
     const fetchUsers = async () => {
         try {
             const response = await axios.get('http://localhost:9999/api/author/list');
-            setUsers(response.data);
+            // Parse dob using moment
+            const usersWithParsedDob = response.data.map(user => ({
+                ...user,
+                dob: moment(user.dob) // Assuming your date format is YYYY-MM-DD
+            }));
+            setUsers(usersWithParsedDob); 
         } catch (error) {
             console.error('Error fetching users:', error);
             notification.error({ message: 'Error fetching users', description: error.message });
@@ -114,10 +120,7 @@ const AuthorManagement = () => {
         setIsModalVisible(true);
         form.setFieldsValue({
             ...user,
-            full_name: user.full_name,
-            introduce: user.introduce,
-            img: user.img,
-            dob: user.dob,
+            dob: user.dob ? moment(user.dob, 'YYYY-MM-DD') : null 
         });
     };
 
@@ -141,6 +144,7 @@ const AuthorManagement = () => {
             width: 120,
             dataIndex: 'introduce',
             key: 'introduce',
+            className: "truncate max-w-[300px]"
         },
         {
             title: 'Hành động',
@@ -203,7 +207,7 @@ const AuthorManagement = () => {
                         icon={<PlusOutlined />}
                         onClick={() => setIsModalVisible(true)}
                     >
-                        Thêm người dùng
+                        Thêm tác giả
                     </Button>
                 </Col>
             </Row>
@@ -214,7 +218,7 @@ const AuthorManagement = () => {
                 rowKey="_id"
             />
             <Modal
-                title={editingUser ? 'Cập nhật người dùng' : 'Thêm người dùng'}
+                title={editingUser ? 'Cập nhật tác giả' : 'Thêm tác giả'}
                 visible={isModalVisible}
                 onCancel={() => {
                     setIsModalVisible(false);
@@ -232,18 +236,18 @@ const AuthorManagement = () => {
                         <Input />
                     </Form.Item>
 
-                    {!editingUser && (
-                        <Form.Item
-                            name="dob"
-                            label="Ngày sinh"
-                            rules={[{ required: true, message: 'Vui lòng chọn ngày sinh' }]}
-                        >
-                            <DatePicker
-                                style={{ width: '100%' }}
-                                format="DD/MM/YYYY" // Định dạng ngày
-                            />
-                        </Form.Item>
-                    )}
+
+                    <Form.Item
+                        name="dob"
+                        label="Ngày sinh"
+                        rules={[{ required: true, message: 'Vui lòng chọn ngày sinh' }]}
+                    >
+                        <DatePicker
+                            style={{ width: '100%' }}
+                            format="DD/MM/YYYY" // Định dạng ngày
+                        />
+                    </Form.Item>
+
 
 
                     <Form.Item
