@@ -20,7 +20,8 @@ import {
     SearchOutlined,
     CheckOutlined,
     TruckOutlined,
-    EyeOutlined
+    EyeOutlined,
+    StopOutlined
 } from '@ant-design/icons';
 import axios from 'axios';
 import moment from 'moment';
@@ -189,7 +190,7 @@ const OrderManagement = () => {
                                     okText="Có"
                                     cancelText="Không"
                                 >
-                                    <Button type="text" icon={<DeleteOutlined />} />
+                                    <Button type="text" icon={<StopOutlined />} />
                                 </Popconfirm>
                                 {/* Nút xem chi tiết đơn hàng */}
                                 <Button
