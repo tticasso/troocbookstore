@@ -2,6 +2,7 @@ const db = require('../models');
 const User = db.user;
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
+const { OAuth2Client } = require('google-auth-library');
 require('dotenv').config();
 
 async function signUp(req, res) {
@@ -19,6 +20,41 @@ async function signUp(req, res) {
         res.status(500).json({ message: 'Error creating user', error });
     }
 }
+
+async function googleLogin(req, res) {
+    const { googleToken } = req.body;
+    try {
+      const client = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
+      const ticket = await client.verifyIdToken({
+        idToken: googleToken,
+        audience: process.env.GOOGLE_CLIENT_ID,
+      });
+      const   
+   payload = ticket.getPayload();
+      const   
+   { email, name, picture } = payload;
+  
+      let user = await User.findOne({ email });
+      if (!user) {
+        // Tạo người dùng mới nếu chưa tồn tại
+        user = new User({
+          full_name: name,
+          email: email,
+          password: 'trooc123',
+          phone_number: '0123456789',
+          role: 'user'
+        });
+        await user.save();
+      }
+  
+      const token = jwt.sign({ userId: user._id }, process.env.JWT_SECRET, { expiresIn: '1h' });
+      res.status(200).json({ token, userId: user._id,   
+   role: user.role });
+    } catch (error) {
+      console.error('Error during Google login:', error);
+      res.status(500).json({ message: 'Lỗi đăng nhập bằng Google' });
+    }
+  }
 
 
 async function login(req, res) {
@@ -141,7 +177,8 @@ const userController = {
     activeUser,
     inactiveUser,
     updateUser,
-    getUserDetails
+    getUserDetails,
+    googleLogin
 };
 
 module.exports = userController;

@@ -8,6 +8,7 @@ userRouter.use(bodyParser.json());
 //Create route: URI - /create
 userRouter.post('/signup', userController.signUp);
 userRouter.post('/login', userController.login);
+userRouter.post('/google-login', userController.googleLogin);
 userRouter.get('/list', userController.list);
 userRouter.get('/:userId', userController.getUserDetails);
 userRouter.delete('/delete/:userId', userController.deleteUser);
